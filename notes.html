@@ -1,0 +1,1818 @@
+﻿<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My Notes</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%2313264f'/%3E%3Cpath d='M10 9h12M10 16h12M10 23h7' stroke='%23d3e5f4' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Doto:wght@100..900&family=Figtree:wght@400;500;600;700&family=Outfit:wght@100..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+<script>
+  // Apply the saved theme before first paint to avoid a flash.
+  (function () {
+    var mode = 'auto';
+    try { mode = localStorage.getItem('notes.theme') || 'auto'; } catch (e) {}
+    var dark = mode === 'dark' || (mode === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+  })();
+</script>
+<style>
+/* ============ Design tokens — tweak the palette here ============ */
+:root {
+  --bg1: #8da2c4;            /* dusty slate blue */
+  --bg2: #a8b6e2;            /* soft periwinkle */
+  --bg3: #d3e5f4;            /* pale sky */
+  --glow: rgba(255,255,255,.38);
+  --ink: #10203f;
+  --ink-2: #40537b;
+  --ink-3: #596b92;
+  --card: rgba(255,255,255,.66);
+  --card-hover: rgba(255,255,255,.82);
+  --card-solid: #fbfcff;
+  --card-border: rgba(255,255,255,.85);
+  --sheet: rgba(255,255,255,.94);
+  --accent: #13264f;         /* deep navy */
+  --on-accent: #ffffff;
+  --accent-soft: rgba(19,38,79,.08);
+  --line: rgba(16,32,63,.13);
+  --shadow: 0 12px 34px rgba(36,56,108,.15);
+  --shadow-lg: 0 30px 80px rgba(30,48,100,.25);
+  --danger: #a8211a;
+  --note-bg: #e4eeff;  --note-ink: #1d3a7a;
+  --tip-bg: #dcf3e8;   --tip-ink: #11593a;
+  --warn-bg: #fff0d1;  --warn-ink: #7a4a05;
+  --code-bg: #0f1b38;
+  --radius: 26px;
+  --font-body: 'Figtree', system-ui, sans-serif;
+  --font-display: 'Outfit', 'Figtree', system-ui, sans-serif;
+  --font-dot: 'Doto', 'Outfit', monospace;
+}
+[data-theme="dark"] {
+  --bg1: #0a1230;
+  --bg2: #1a2064;
+  --bg3: #0e2a55;
+  --glow: rgba(120,140,255,.22);
+  --ink: #e4ecff;
+  --ink-2: #b2bfe4;
+  --ink-3: #93a2cc;
+  --card: rgba(22,33,78,.58);
+  --card-hover: rgba(30,44,98,.72);
+  --card-solid: #131d47;
+  --card-border: rgba(160,180,255,.16);
+  --sheet: rgba(13,21,54,.92);
+  --accent: #d6e2ff;
+  --on-accent: #0d1a3f;
+  --accent-soft: rgba(214,226,255,.1);
+  --line: rgba(190,205,255,.16);
+  --shadow: 0 12px 34px rgba(0,0,10,.35);
+  --shadow-lg: 0 30px 80px rgba(0,0,10,.5);
+  --danger: #ff9b94;
+  --note-bg: #1d2f66;  --note-ink: #c4d6ff;
+  --tip-bg: #14403a;   --tip-ink: #b6f0d6;
+  --warn-bg: #4a3512;  --warn-ink: #ffdca0;
+}
+
+/* ============ Highlight meanings ============ */
+:root {
+  --hl-important: rgba(255,196,0,.5);  --hl-important-dot: #f2b200;
+  --hl-remember: rgba(80,150,255,.3);  --hl-remember-dot: #3d82f0;
+  --hl-question: rgba(176,100,255,.28); --hl-question-dot: #a35cf0;
+}
+[data-theme="dark"] {
+  --hl-important: rgba(255,196,0,.3);  --hl-important-dot: #ffd04a;
+  --hl-remember: rgba(90,160,255,.36); --hl-remember-dot: #7db3ff;
+  --hl-question: rgba(190,120,255,.38); --hl-question-dot: #c796ff;
+}
+mark.hl { color: inherit; padding: 1px 3px; margin: 0 -1px; border-radius: 6px; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+mark.hl-important { background: var(--hl-important); }
+mark.hl-remember { background: var(--hl-remember); }
+mark.hl-question { background: var(--hl-question); }
+.hl-dot { display: block; width: 16px; height: 16px; border-radius: 50%; border: 2px solid transparent; }
+.hl-dot-important { background: var(--hl-important-dot); } .hl-dot-remember { background: var(--hl-remember-dot); } .hl-dot-question { background: var(--hl-question-dot); }
+.ce-inline-tool--active .hl-dot { border-color: var(--ink); }
+
+/* ============ Folder tones (note sheet background) ============ */
+:root {
+  --tone-sky: rgba(226,238,255,.96); --tone-mint: rgba(222,243,234,.96); --tone-sage: rgba(230,239,220,.96);
+  --tone-sand: rgba(246,236,217,.96); --tone-rose: rgba(249,227,230,.96); --tone-lilac: rgba(235,228,248,.96);
+  --tone-slate: rgba(228,232,240,.96);
+}
+[data-theme="dark"] {
+  --tone-sky: rgba(23,42,92,.94); --tone-mint: rgba(17,56,47,.94); --tone-sage: rgba(35,51,31,.94);
+  --tone-sand: rgba(58,47,26,.94); --tone-rose: rgba(61,31,44,.94); --tone-lilac: rgba(45,34,96,.94);
+  --tone-slate: rgba(31,38,56,.94);
+}
+.sheet[data-tone="sky"] { --sheet: var(--tone-sky); } .sheet[data-tone="mint"] { --sheet: var(--tone-mint); }
+.sheet[data-tone="sage"] { --sheet: var(--tone-sage); } .sheet[data-tone="sand"] { --sheet: var(--tone-sand); }
+.sheet[data-tone="rose"] { --sheet: var(--tone-rose); } .sheet[data-tone="lilac"] { --sheet: var(--tone-lilac); }
+.sheet[data-tone="slate"] { --sheet: var(--tone-slate); }
+.swatches { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+.sw { width: 34px; height: 34px; border-radius: 50%; border: 1.5px solid var(--line); background: var(--tone, var(--card-solid)); display: grid; place-items: center; color: var(--ink); transition: transform .12s; }
+.sw:hover { transform: scale(1.08); }
+.sw[aria-checked="true"] { outline: 2px solid var(--accent); outline-offset: 2px; }
+.sw[data-tone=""] { background: var(--card-solid); }
+.sw[data-tone="sky"] { --tone: var(--tone-sky); } .sw[data-tone="mint"] { --tone: var(--tone-mint); } .sw[data-tone="sage"] { --tone: var(--tone-sage); }
+.sw[data-tone="sand"] { --tone: var(--tone-sand); } .sw[data-tone="rose"] { --tone: var(--tone-rose); } .sw[data-tone="lilac"] { --tone: var(--tone-lilac); }
+.sw[data-tone="slate"] { --tone: var(--tone-slate); }
+.fdot { width: 9px; height: 9px; border-radius: 50%; flex: none; background: var(--tone); border: 1px solid var(--line); }
+.fdot[data-tone="sky"] { --tone: var(--tone-sky); } .fdot[data-tone="mint"] { --tone: var(--tone-mint); } .fdot[data-tone="sage"] { --tone: var(--tone-sage); }
+.fdot[data-tone="sand"] { --tone: var(--tone-sand); } .fdot[data-tone="rose"] { --tone: var(--tone-rose); } .fdot[data-tone="lilac"] { --tone: var(--tone-lilac); }
+.fdot[data-tone="slate"] { --tone: var(--tone-slate); }
+
+/* ============ Base ============ */
+*, *::before, *::after { box-sizing: border-box; }
+html { color-scheme: light; }
+html[data-theme="dark"] { color-scheme: dark; }
+body {
+  margin: 0; min-height: 100vh;
+  font-family: var(--font-body); font-size: 16px; line-height: 1.5; color: var(--ink);
+  background: linear-gradient(155deg, var(--bg1) 0%, var(--bg2) 52%, var(--bg3) 100%) fixed;
+  -webkit-font-smoothing: antialiased;
+}
+body::before {
+  content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background:
+    radial-gradient(50% 40% at 85% 8%, var(--glow), transparent 70%),
+    radial-gradient(45% 45% at 5% 95%, var(--glow), transparent 70%);
+}
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; background: none; border: 0; padding: 0; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 8px; }
+[hidden] { display: none !important; }
+svg { display: block; flex: none; }
+::selection { background: rgba(110,140,230,.35); }
+
+.app { position: relative; z-index: 1; display: flex; align-items: flex-start; min-height: 100vh; }
+main { flex: 1; min-width: 0; padding: 40px clamp(20px, 4vw, 56px) 150px; }
+
+/* ============ Sidebar ============ */
+.sidebar {
+  position: sticky; top: 16px; margin: 16px 0 16px 16px; width: 64px; flex: none;
+  max-height: calc(100vh - 32px); overflow: hidden auto; scrollbar-width: thin;
+  padding: 10px 8px; border-radius: 28px;
+  background: var(--card); border: 1px solid var(--card-border); box-shadow: var(--shadow);
+  backdrop-filter: blur(22px) saturate(1.3); -webkit-backdrop-filter: blur(22px) saturate(1.3);
+  transition: width .25s ease;
+}
+.sidebar.open { width: 268px; }
+.sb-item, .sec-head {
+  display: flex; align-items: center; gap: 12px; width: 100%; height: 44px; padding: 0 13px;
+  border-radius: 16px; color: var(--ink-2); text-align: left; white-space: nowrap;
+}
+.sb-item:hover, .sec-head:hover, .frow:hover { background: var(--accent-soft); color: var(--ink); }
+.sb-item.active { background: var(--accent); color: var(--on-accent); }
+.sb-item .grow, .sec-head .grow { flex: 1; overflow: hidden; text-overflow: ellipsis; }
+.sb-count, .fcount { font-size: 12px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.sb-item.active .sb-count { color: inherit; opacity: .8; }
+.sidebar:not(.open) .grow, .sidebar:not(.open) .sb-count, .sidebar:not(.open) .sec-add,
+.sidebar:not(.open) .sec-list { display: none; }
+.sec-head { height: 40px; margin-top: 8px; font-size: 13px; font-weight: 600; color: var(--ink-3); }
+.sec-add { margin-left: auto; width: 26px; height: 26px; display: grid; place-items: center; border-radius: 50%; color: var(--ink-2); }
+.sec-add:hover { background: var(--accent-soft); }
+.sec-list { padding-bottom: 4px; }
+.frow {
+  display: flex; align-items: center; gap: 4px; min-height: 36px; padding: 0 6px 0 calc(8px + var(--d, 0) * 16px);
+  border-radius: 12px; color: var(--ink-2); cursor: pointer; font-size: 14.5px;
+}
+.frow.active { background: var(--accent-soft); color: var(--ink); font-weight: 600; }
+.frow.drop { outline: 2px dashed var(--accent); }
+.frow .fname { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.chev { width: 22px; height: 22px; display: grid; place-items: center; border-radius: 6px; transition: transform .15s; }
+.chev.o { transform: rotate(90deg); }
+.chev-sp { width: 22px; flex: none; }
+.fact { display: none; gap: 0; }
+.frow:hover .fact { display: flex; }
+.frow:hover .fcount { display: none; }
+.fact button { width: 24px; height: 24px; display: grid; place-items: center; border-radius: 6px; color: var(--ink-2); }
+.fact button:hover { background: var(--accent-soft); color: var(--ink); }
+.empty-hint { padding: 4px 14px 8px; font-size: 13px; color: var(--ink-3); white-space: normal; }
+
+/* ============ Floating action bar ============ */
+.dock {
+  position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); z-index: 20;
+  display: flex; align-items: center; gap: 8px; padding: 8px; border-radius: 999px;
+  background: var(--card); border: 1px solid var(--card-border); box-shadow: var(--shadow-lg);
+  backdrop-filter: blur(24px) saturate(1.4); -webkit-backdrop-filter: blur(24px) saturate(1.4);
+}
+.dock button { width: 48px; height: 48px; border-radius: 50%; display: grid; place-items: center; color: var(--ink-2); transition: background .15s; }
+.dock button:hover { background: var(--accent-soft); color: var(--ink); }
+.dock button.active { color: var(--ink); background: var(--accent-soft); }
+.dock .primary { width: 62px; height: 62px; margin: 0 6px; background: var(--accent); color: var(--on-accent); box-shadow: 0 8px 20px rgba(19,38,79,.35); }
+.dock .primary:hover { background: var(--accent); color: var(--on-accent); filter: brightness(1.12); }
+
+/* ============ Shared bits ============ */
+.round {
+  width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; flex: none;
+  border: 1.5px solid var(--ink-3); color: var(--ink); background: transparent; transition: background .15s;
+}
+.round:hover { background: var(--accent-soft); }
+.round.on { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+.btn {
+  display: inline-flex; align-items: center; gap: 8px; height: 42px; padding: 0 20px; border-radius: 999px;
+  font-weight: 600; background: var(--accent); color: var(--on-accent); transition: filter .15s;
+}
+.btn:hover { filter: brightness(1.15); }
+.btn.ghost { background: transparent; color: var(--ink); border: 1.5px solid var(--ink-3); }
+.btn.ghost:hover { background: var(--accent-soft); filter: none; }
+.btn.danger { background: var(--danger); color: #fff; }
+[data-theme="dark"] .btn.danger { color: #2a0705; }
+.btn.small { height: 34px; padding: 0 14px; font-size: 14px; }
+.dot { font-family: var(--font-dot); font-weight: 400; line-height: 1; letter-spacing: .02em; }
+
+/* ============ Home ============ */
+.hero { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+.hero h1 {
+  margin: 0; font-family: var(--font-display); font-weight: 200; letter-spacing: -.03em; line-height: 1;
+  font-size: clamp(56px, 9vw, 120px); color: var(--ink);
+}
+.hero .sub { margin: 14px 0 0; color: var(--ink-2); font-size: 17px; }
+.sortbox { display: flex; align-items: center; gap: 8px; color: var(--ink-2); font-size: 14px; }
+.sortbox select {
+  height: 38px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--card-border); background: var(--card);
+  backdrop-filter: blur(14px); cursor: pointer;
+}
+.sortbox select option { color: #10203f; background: #fff; }
+.chips { display: flex; gap: 10px; flex-wrap: wrap; margin: 30px 0 26px; }
+.chip {
+  display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 18px; border-radius: 999px;
+  background: var(--card); border: 1px solid var(--card-border); color: var(--ink); font-weight: 500;
+  backdrop-filter: blur(14px); transition: background .15s;
+}
+.chip:hover { background: var(--card-hover); }
+.chip.on { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+.chip .badge { min-width: 22px; height: 22px; padding: 0 7px; border-radius: 99px; display: grid; place-items: center; font-size: 12px; font-weight: 700; background: var(--on-accent); color: var(--accent); }
+.chip .tg { opacity: .55; }
+
+.banner {
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin: 24px 0 0; padding: 12px 14px 12px 20px;
+  border-radius: 999px; background: var(--card); border: 1px solid var(--card-border); backdrop-filter: blur(14px);
+}
+.banner p { margin: 0; flex: 1; min-width: 200px; }
+
+.grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(236px, 1fr)); grid-auto-rows: minmax(158px, auto);
+  grid-auto-flow: dense; gap: 18px;
+}
+.sec { margin-top: 38px; }
+.sec:first-of-type { margin-top: 0; }
+.sec-title {
+  display: flex; align-items: center; gap: 12px; margin: 0 0 16px 6px; font-family: var(--font-display);
+  font-weight: 300; font-size: 28px; letter-spacing: -.02em; color: var(--ink);
+}
+.sec-title::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+.sec-n { order: 1; font-family: var(--font-body); font-size: 13px; font-weight: 600; color: var(--ink-2); padding: 2px 10px; border-radius: 99px; background: var(--card); }
+.sec-title::after { order: 2; }
+.card {
+  position: relative; display: flex; flex-direction: column; gap: 8px; min-height: 176px; padding: 22px; overflow: hidden;
+  border-radius: var(--radius); background: var(--card); border: 1px solid var(--card-border); box-shadow: var(--shadow);
+  backdrop-filter: blur(18px) saturate(1.3); -webkit-backdrop-filter: blur(18px) saturate(1.3);
+  cursor: pointer; transition: transform .2s ease, background .2s ease;
+}
+.card:hover { transform: translateY(-3px); background: var(--card-hover); }
+.w2 { grid-column: span 2; } .h2 { grid-row: span 2; }
+.c-title { margin: 0; font-family: var(--font-display); font-weight: 500; font-size: 21px; line-height: 1.2; letter-spacing: -.01em; padding-right: 30px; overflow-wrap: anywhere; }
+.c-prev { margin: 0; color: var(--ink-2); font-size: 15px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere; }
+.c-meta { margin-top: auto; padding-top: 10px; display: flex; flex-wrap: wrap; gap: 6px 12px; font-size: 13px; color: var(--ink-3); align-items: center; }
+.c-tag { padding: 1px 9px; border-radius: 99px; background: var(--accent-soft); color: var(--ink-2); }
+.pinbtn { position: absolute; top: 14px; right: 14px; width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; color: var(--ink-3); opacity: 0; transition: opacity .15s; }
+.card:hover .pinbtn, .pinbtn.on, .pinbtn:focus-visible { opacity: 1; }
+.pinbtn.on { color: var(--ink); }
+.pinbtn:hover { background: var(--accent-soft); }
+.card.pin .c-title { font-family: var(--font-dot); font-weight: 600; font-size: 22px; letter-spacing: .02em; }
+.card.pin .big { font-size: 72px; color: var(--ink); margin-bottom: 4px; }
+.card.folder { justify-content: space-between; }
+.card.folder .big { font-size: 78px; }
+.card.folder .row { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; }
+.card.folder .fl-name { font-family: var(--font-dot); font-weight: 600; font-size: 20px; letter-spacing: .02em; overflow-wrap: anywhere; }
+.card.folder .fl-sub { color: var(--ink-3); font-size: 14px; }
+.card.folder .go { width: 46px; height: 46px; border-radius: 50%; background: var(--accent); color: var(--on-accent); display: grid; place-items: center; flex: none; }
+.card.img { color: #fff; border: 0; padding: 0; min-height: 340px; background: #5d73a6 center/cover no-repeat; }
+.card.img::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(8,16,40,.78), rgba(8,16,40,0) 62%); }
+.card.img .over { position: absolute; left: 22px; right: 22px; bottom: 20px; z-index: 1; }
+.card.img .c-title { font-family: var(--font-dot); font-weight: 700; font-size: 30px; padding: 0; }
+.card.img .sub { font-size: 14px; opacity: .85; margin-top: 4px; }
+.card.todo { cursor: default; }
+.card.todo:hover { transform: none; }
+.todo-head { display: flex; justify-content: space-between; align-items: flex-start; }
+.todo-head .big { font-size: 64px; }
+.todo-head span.t { font-family: var(--font-display); font-weight: 500; font-size: 21px; }
+.pills { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; }
+.pill {
+  display: flex; align-items: center; gap: 10px; min-height: 42px; padding: 4px 16px 4px 5px; border-radius: 999px;
+  border: 1.5px solid var(--line); background: rgba(255,255,255,.35); color: var(--ink); text-align: left; width: 100%;
+}
+[data-theme="dark"] .pill { background: rgba(255,255,255,.04); }
+.pill:hover { border-color: var(--ink-3); }
+.pill .ck { width: 32px; height: 32px; border-radius: 50%; border: 1.5px solid var(--ink-3); display: grid; place-items: center; flex: none; }
+.pill .txt { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 15px; }
+.pill .txt small.due { display: block; font-size: 12px; line-height: 1.2; opacity: .7; }
+.pill .txt small.due.late { color: var(--danger); opacity: 1; font-weight: 600; }
+.pill .txt { line-height: 1.25; }
+.pill.done { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.pill.done .ck { border-color: transparent; background: rgba(255,255,255,.18); }
+[data-theme="dark"] .pill.done .ck { background: rgba(13,26,63,.12); }
+.pill.done .txt { text-decoration: line-through; text-decoration-thickness: 1px; opacity: .9; }
+
+.empty {
+  max-width: 520px; margin: 50px auto; padding: 44px; border-radius: 36px; text-align: center;
+  background: var(--card); border: 1px solid var(--card-border); backdrop-filter: blur(18px); box-shadow: var(--shadow);
+}
+.empty .big { font-size: 80px; }
+.empty h2 { margin: 6px 0 8px; font-family: var(--font-display); font-weight: 300; font-size: 32px; letter-spacing: -.02em; }
+.empty p { margin: 0 0 24px; color: var(--ink-2); }
+
+/* ============ Note view ============ */
+.note-view { max-width: 920px; margin: 0 auto; }
+.note-top { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; flex-wrap: wrap; }
+.note-top .meta { flex: 1; display: flex; align-items: center; gap: 14px; min-width: 200px; flex-wrap: wrap; }
+.note-top .actions { display: flex; gap: 10px; }
+.move { display: flex; align-items: center; gap: 8px; color: var(--ink-2); font-size: 14px; }
+.move select { height: 38px; max-width: 240px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--card-border); background: var(--card); backdrop-filter: blur(14px); cursor: pointer; }
+.move select option { color: #10203f; background: #fff; }
+.status { font-size: 13px; color: var(--ink-2); transition: opacity .4s; }
+.status.idle { opacity: .55; }
+.status.err { color: var(--danger); opacity: 1; font-weight: 600; }
+.sheet {
+  padding: 56px 56px 44px 84px; border-radius: 36px; background: var(--sheet); border: 1px solid var(--card-border);
+  box-shadow: var(--shadow-lg); backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px); min-height: 60vh;
+}
+.title {
+  display: block; width: 100%; border: 0; outline: 0; resize: none; overflow: hidden; background: transparent; padding: 0;
+  font-family: var(--font-display); font-weight: 200; font-size: clamp(40px, 5.6vw, 68px); line-height: 1.05; letter-spacing: -.03em; color: var(--ink);
+}
+.title::placeholder { color: var(--ink-3); opacity: .6; }
+.dates { margin: 12px 0 0; font-size: 13px; color: var(--ink-3); }
+.tagrow { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 20px 0 26px; }
+.tag { display: inline-flex; align-items: center; gap: 4px; height: 32px; padding: 0 6px 0 14px; border-radius: 99px; background: var(--accent-soft); color: var(--ink); font-size: 14px; }
+.tag button { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; color: var(--ink-2); }
+.tag button:hover { background: var(--line); }
+.taginput { height: 32px; width: 130px; border: 1px dashed var(--line); border-radius: 99px; background: transparent; padding: 0 14px; outline: 0; font-size: 14px; }
+.taginput:focus { border-color: var(--ink-3); }
+.taginput::placeholder { color: var(--ink-3); }
+#editor { margin-left: -4px; font-size: 17px; line-height: 1.7; }
+.backlinks { margin-top: 44px; padding-top: 22px; border-top: 1px solid var(--line); }
+.backlinks h3 { margin: 0 0 10px; font-family: var(--font-display); font-weight: 500; font-size: 18px; }
+.backlinks p { margin: 0; color: var(--ink-3); font-size: 14.5px; }
+.bl { display: flex; align-items: baseline; gap: 10px; width: 100%; padding: 9px 12px; border-radius: 12px; text-align: left; }
+.bl:hover { background: var(--accent-soft); }
+.bl small { color: var(--ink-3); }
+.trash-note { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; padding: 12px 20px; margin-bottom: 18px; border-radius: 99px; background: var(--warn-bg); color: var(--warn-ink); }
+.trash-note span { flex: 1; font-weight: 500; }
+
+/* Trash view */
+.list { display: flex; flex-direction: column; gap: 10px; margin-top: 28px; max-width: 820px; }
+.row-card { display: flex; align-items: center; gap: 14px; padding: 14px 14px 14px 22px; border-radius: 24px; background: var(--card); border: 1px solid var(--card-border); backdrop-filter: blur(14px); }
+.row-card .grow { flex: 1; min-width: 0; }
+.row-card .t { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.row-card .s { font-size: 13px; color: var(--ink-3); }
+
+/* ============ Editor.js adaptation ============ */
+.codex-editor { color: var(--ink); }
+.codex-editor__redactor { padding-bottom: 60px !important; }
+body .ce-block__content, body .ce-toolbar__content { max-width: none; }
+.ce-paragraph, .ce-header { color: var(--ink); }
+.ce-header { font-family: var(--font-display); font-weight: 600; letter-spacing: -.01em; }
+h1.ce-header { font-size: 2.1em; font-weight: 400; } h2.ce-header { font-size: 1.6em; } h3.ce-header { font-size: 1.28em; }
+.ce-paragraph[data-placeholder]:empty::before, .cdx-block ::placeholder { color: var(--ink-3); }
+.ce-toolbar__plus, .ce-toolbar__settings-btn { color: var(--ink-3); }
+.ce-toolbar__plus:hover, .ce-toolbar__settings-btn:hover { background: var(--accent-soft); color: var(--ink); }
+body .ce-popover, body .ce-inline-toolbar, body .ce-conversion-toolbar, body .ce-settings, body .ce-popover__container {
+  --color-background: var(--card-solid); --color-text-primary: var(--ink); --color-text-secondary: var(--ink-3);
+  --color-border: var(--line); --color-background-item-hover: var(--accent-soft); --color-background-item-active: var(--accent-soft);
+  background: var(--card-solid); color: var(--ink); border-color: var(--line);
+}
+body .ce-popover-item__title, body .ce-popover-item__icon, body .ce-inline-tool, body .ce-inline-toolbar__dropdown { color: var(--ink); }
+body .ce-popover-item__icon { background: var(--accent-soft); box-shadow: none; }
+.ce-inline-tool:hover, .ce-popover-item:hover { background: var(--accent-soft); }
+.ce-inline-tool--active { color: #3b6cf0; }
+.ce-block--selected .ce-block__content { background: rgba(110,140,230,.18); }
+.ce-delimiter:before { color: var(--ink-3); }
+.cdx-checklist__item-text { color: var(--ink); }
+.cdx-checklist .cdx-checklist__item-checkbox { border-color: var(--ink-3); background: transparent; }
+.cdx-checklist .cdx-checklist__item--checked .cdx-checklist__item-checkbox { background: var(--accent); border-color: var(--accent); }
+.cdx-checklist__item--checked .cdx-checklist__item-checkbox-check { background: transparent; }
+.cdx-checklist__item--checked .cdx-checklist__item-checkbox svg path { stroke: var(--on-accent); }
+.cdx-checklist__item--checked .cdx-checklist__item-text { opacity: .55; text-decoration: line-through; }
+/* Clean checkboxes: one rounded square, navy when checked, white tick, no leftover blue */
+body .cdx-checklist .cdx-checklist__item-checkbox {
+  width: 24px; height: 24px; margin-right: 12px; border-radius: 8px !important; border: 1.5px solid var(--ink-3) !important;
+  background: transparent !important; box-shadow: none !important; overflow: hidden;
+}
+body .cdx-checklist .cdx-checklist__item--checked .cdx-checklist__item-checkbox { background: var(--accent) !important; border-color: var(--accent) !important; }
+body .cdx-checklist .cdx-checklist__item-checkbox-check { background: transparent !important; border: 0 !important; border-radius: 0 !important; box-shadow: none !important; }
+body .cdx-checklist .cdx-checklist__item-checkbox-check { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+body .cdx-checklist .cdx-checklist__item-checkbox svg { width: 20px !important; height: 20px !important; margin: 0 !important; flex: none; }
+body .cdx-checklist .cdx-checklist__item-checkbox svg path { stroke: var(--on-accent) !important; fill: none !important; stroke-width: 2.4 !important; }
+body .cdx-checklist .cdx-checklist__item--checked .cdx-checklist__item-text { text-decoration-thickness: 1px; }
+.cdx-list__item { color: var(--ink); }
+.tc-table { border-color: var(--line); }
+.tc-cell { border-color: var(--line) !important; color: var(--ink); }
+.tc-row::after { border-color: var(--line); }
+.tc-table--heading .tc-row:first-child { font-weight: 600; border-bottom-color: var(--ink-3); }
+.tc-toolbox__toggler, .tc-add-row, .tc-add-column { color: var(--ink-3); }
+.tc-add-row:hover::before, .tc-add-column:hover { background: var(--accent-soft); }
+.tc-popover, .tc-popover__item { color: var(--ink); background: var(--card-solid); }
+.codex-editor a, .cdx-block a { color: #3b6cf0; text-decoration: underline; text-underline-offset: 3px; }
+[data-theme="dark"] .codex-editor a { color: #9fbaff; }
+.cdx-block a[href^="#/note/"] { padding: 0 6px; border-radius: 8px; background: var(--note-bg); color: var(--note-ink); text-decoration: none; font-weight: 500; }
+.cdx-input { border-color: var(--line); background: transparent; box-shadow: none; color: var(--ink); }
+
+/* Custom blocks */
+.cb-callout { display: flex; gap: 12px; align-items: flex-start; padding: 14px 18px 14px 12px; border-radius: 18px; margin: 4px 0; }
+.cb-callout.k-note { background: var(--note-bg); color: var(--note-ink); }
+.cb-callout.k-tip { background: var(--tip-bg); color: var(--tip-ink); }
+.cb-callout.k-warning { background: var(--warn-bg); color: var(--warn-ink); }
+.cb-callout-kind { flex: none; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: rgba(255,255,255,.55); color: inherit; }
+[data-theme="dark"] .cb-callout-kind { background: rgba(255,255,255,.1); }
+.cb-callout-kind:hover { filter: brightness(.95); }
+.cb-callout-text { flex: 1; outline: 0; min-height: 34px; padding-top: 3px; line-height: 1.6; }
+.cb-callout-text:empty::before { content: attr(data-placeholder); opacity: .6; }
+.cb-media { margin: 8px 0; }
+.cb-drop { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 26px; border: 1.5px dashed var(--ink-3); border-radius: 20px; color: var(--ink-2); text-align: center; }
+.cb-drop small { color: var(--ink-3); }
+.cb-media img { max-width: 100%; border-radius: 18px; display: block; margin: 0 auto; }
+.cb-cap { display: block; width: 100%; margin-top: 8px; border: 0; outline: 0; background: transparent; text-align: center; font-size: 14px; color: var(--ink-2); }
+.cb-file { display: flex; align-items: center; gap: 14px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 18px; background: var(--accent-soft); }
+.cb-file .ic { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: var(--accent); color: var(--on-accent); }
+.cb-file .nm { flex: 1; min-width: 0; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cb-file small { display: block; font-weight: 400; color: var(--ink-3); }
+.cb-code { margin: 6px 0; border-radius: 18px; background: var(--code-bg); color: #e6edf3; overflow: hidden; }
+.cb-code-bar { display: flex; justify-content: space-between; align-items: center; padding: 8px 10px 8px 14px; border-bottom: 1px solid rgba(255,255,255,.08); }
+.cb-code-bar select { background: transparent; border: 0; color: #aebbe0; font-size: 13px; cursor: pointer; outline: 0; }
+.cb-code-bar select option { color: #10203f; }
+.cb-copy { font-size: 13px; padding: 4px 12px; border-radius: 99px; color: #cfdcff; border: 1px solid rgba(255,255,255,.2); }
+.cb-copy:hover { background: rgba(255,255,255,.1); }
+.cb-code-stack { display: grid; }
+.cb-code-stack pre, .cb-code-stack textarea {
+  grid-area: 1 / 1; margin: 0; padding: 14px 16px; border: 0; outline: 0; resize: none; overflow: hidden; background: transparent;
+  font: 14px/1.6 ui-monospace, 'Cascadia Code', Consolas, monospace; white-space: pre-wrap; word-break: break-word; tab-size: 2; min-height: 56px;
+}
+.cb-code-stack pre code.hljs { padding: 0; background: transparent; font: inherit; }
+.cb-code-stack textarea { color: transparent; caret-color: #fff; position: relative; }
+.cb-code-stack textarea::placeholder { color: #6b7aa6; }
+
+.cb-reminder { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 8px 12px 8px 8px; margin: 4px 0; border-radius: 999px; border: 1.5px solid var(--line); background: var(--accent-soft); }
+.cb-reminder .rck { width: 32px; height: 32px; border-radius: 50%; border: 1.5px solid var(--ink-3); display: grid; place-items: center; flex: none; color: var(--on-accent); }
+.cb-reminder.done .rck { background: var(--accent); border-color: var(--accent); }
+.cb-reminder .rtx { flex: 1; min-width: 140px; border: 0; outline: 0; background: transparent; font-size: 16px; color: var(--ink); }
+.cb-reminder.done .rtx { text-decoration: line-through; opacity: .55; }
+.cb-reminder .rdue { height: 34px; padding: 0 12px; border-radius: 99px; border: 1px solid var(--line); background: transparent; color: var(--ink-2); font-size: 14px; }
+.cb-reminder.late:not(.done) .rdue { color: var(--danger); border-color: var(--danger); font-weight: 600; }
+.cb-reminder .rbell { color: var(--ink-3); display: grid; }
+
+/* ============ Overlays ============ */
+dialog.modal {
+  width: min(560px, calc(100vw - 32px)); max-height: calc(100vh - 64px); padding: 28px; border: 1px solid var(--card-border); border-radius: 32px;
+  background: var(--card-solid); color: var(--ink); box-shadow: var(--shadow-lg);
+}
+dialog.modal::backdrop { background: rgba(10,18,48,.4); backdrop-filter: blur(5px); }
+dialog.modal h2 { margin: 0 0 18px; font-family: var(--font-display); font-weight: 300; font-size: 30px; letter-spacing: -.02em; }
+dialog.modal h3 { margin: 22px 0 8px; font-size: 15px; font-weight: 600; }
+.field { display: block; margin-bottom: 14px; font-size: 14px; color: var(--ink-2); }
+.field input, .field select { display: block; width: 100%; margin-top: 6px; height: 44px; padding: 0 14px; border-radius: 14px; border: 1px solid var(--line); background: transparent; color: var(--ink); }
+.field select option { color: #10203f; background: #fff; }
+.modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 22px; }
+.seg { display: inline-flex; padding: 4px; border-radius: 99px; background: var(--accent-soft); }
+.seg button { height: 36px; padding: 0 18px; border-radius: 99px; color: var(--ink-2); font-weight: 500; }
+.seg button.on { background: var(--accent); color: var(--on-accent); }
+.muted { color: var(--ink-3); font-size: 14px; margin: 4px 0 10px; }
+.kbd { display: inline-block; padding: 1px 7px; border-radius: 7px; border: 1px solid var(--line); font-size: 12.5px; background: var(--accent-soft); }
+dialog.search { width: min(680px, calc(100vw - 32px)); padding: 0; margin-top: 12vh; overflow: hidden; }
+.search-in { display: flex; align-items: center; gap: 12px; padding: 18px 22px; border-bottom: 1px solid var(--line); color: var(--ink-3); }
+.search-in input { flex: 1; border: 0; outline: 0; background: transparent; font-size: 19px; color: var(--ink); }
+.results { max-height: 52vh; overflow-y: auto; padding: 8px; }
+.res { display: block; width: 100%; text-align: left; padding: 12px 16px; border-radius: 16px; }
+.res.sel, .res:hover { background: var(--accent-soft); }
+.res .rt { font-weight: 600; }
+.res .rs { font-size: 14px; color: var(--ink-2); margin-top: 2px; overflow-wrap: anywhere; }
+.res .rm { font-size: 12.5px; color: var(--ink-3); margin-top: 2px; }
+mark { background: rgba(255,200,60,.5); color: inherit; border-radius: 4px; padding: 0 2px; }
+.res-empty { padding: 28px; text-align: center; color: var(--ink-3); }
+.popup {
+  position: fixed; z-index: 100; width: 270px; max-height: 300px; overflow-y: auto; padding: 6px; border-radius: 18px;
+  background: var(--card-solid); border: 1px solid var(--line); box-shadow: var(--shadow-lg);
+}
+.popup button { display: flex; align-items: center; gap: 12px; width: 100%; padding: 8px 10px; border-radius: 12px; text-align: left; }
+.popup button.sel { background: var(--accent-soft); }
+.popup .pi { width: 32px; height: 32px; border-radius: 10px; display: grid; place-items: center; background: var(--accent-soft); flex: none; }
+.popup small { display: block; color: var(--ink-3); font-size: 12px; }
+.toast {
+  position: fixed; left: 50%; bottom: 104px; transform: translateX(-50%); z-index: 60; display: flex; align-items: center; gap: 16px;
+  padding: 10px 12px 10px 22px; border-radius: 99px; background: var(--accent); color: var(--on-accent); box-shadow: var(--shadow-lg);
+}
+.toast button { font-weight: 700; padding: 6px 14px; border-radius: 99px; background: rgba(255,255,255,.18); color: inherit; }
+[data-theme="dark"] .toast button { background: rgba(13,26,63,.14); }
+
+@media (max-width: 760px) {
+  .sheet { padding: 32px 22px 28px 40px; border-radius: 28px; }
+  .w2 { grid-column: span 1; }
+  .sidebar { margin-left: 8px; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar" id="sidebar" aria-label="Navigation"></aside>
+  <main id="main"></main>
+</div>
+<nav class="dock" aria-label="Main actions">
+  <button data-act="home" id="dock-home" aria-label="Home" title="Home"></button>
+  <button data-act="search" aria-label="Search (Ctrl+K)" title="Search (Ctrl+K)"></button>
+  <button class="primary" data-act="new" aria-label="New note (Alt+N)" title="New note (Alt+N)"></button>
+  <button data-act="settings" aria-label="Settings and backup" title="Settings and backup"></button>
+</nav>
+<div class="popup" id="popup" hidden></div>
+<div id="toast-host"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/editorjs@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/header@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/list@1"></script>
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/checklist@1"></script>
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/table@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/editorjs-drag-drop@1"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>
+'use strict';
+/* =====================================================================
+   Helpers
+   ===================================================================== */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const uuid = () => (window.crypto && crypto.randomUUID) ? crypto.randomUUID()
+  : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => { const r = Math.random() * 16 | 0; return (c === 'x' ? r : (r & 3 | 8)).toString(16); });
+const now = () => new Date().toISOString();
+const lsGet = (k, d) => { try { return localStorage.getItem(k) ?? d; } catch (e) { return d; } };
+const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} };
+const strip = h => { const d = document.createElement('div'); d.innerHTML = String(h ?? ''); return d.textContent.replace(/ /g, ' '); };
+const fmtDate = iso => {
+  const d = new Date(iso), n = new Date();
+  const dd = Math.round((new Date(n.toDateString()) - new Date(d.toDateString())) / 864e5);
+  if (dd === 0) return 'Today';
+  if (dd === 1) return 'Yesterday';
+  if (dd < 7 && dd > 0) return d.toLocaleDateString(undefined, { weekday: 'long' });
+  return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: d.getFullYear() === n.getFullYear() ? undefined : 'numeric' });
+};
+const fmtSize = b => b < 1024 ? b + ' B' : b < 1048576 ? (b / 1024).toFixed(0) + ' KB' : (b / 1048576).toFixed(1) + ' MB';
+
+const ICONS = {
+  home: '<path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/>',
+  search: '<circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  settings: '<path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/>',
+  back: '<path d="M15 5l-7 7 7 7"/>',
+  pin: '<path d="M9 3h6l-1 6 3 3v2H7v-2l3-3z"/><path d="M12 14v7"/>',
+  trash: '<path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v5M14 11v5"/>',
+  folder: '<path d="M3 6h6l2 2h10v11H3z"/>',
+  tag: '<path d="M3 12V4h8l10 10-8 8z"/><circle cx="7.5" cy="8.5" r="1.2"/>',
+  inbox: '<path d="M3 13l3-8h12l3 8v6H3z"/><path d="M3 13h5l1 3h6l1-3h5"/>',
+  download: '<path d="M12 4v11M7 11l5 5 5-5M5 20h14"/>',
+  upload: '<path d="M12 16V5M7 9l5-5 5 5M5 20h14"/>',
+  check: '<path d="M5 12l5 5 9-10"/>',
+  chevron: '<path d="M9 6l6 6-6 6"/>',
+  menu: '<path d="M4 7h16M4 12h16M4 17h16"/>',
+  edit: '<path d="M4 20h4L19 9l-4-4L4 16z"/>',
+  restore: '<path d="M4 12a8 8 0 1 0 3-6M4 4v5h5"/>',
+  x: '<path d="M6 6l12 12M18 6L6 18"/>',
+  file: '<path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/>',
+  image: '<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M4 19l6-6 4 4 3-3 4 4"/>',
+  arrow: '<path d="M7 17L17 7M8 7h9v9"/>',
+  code: '<path d="M8 8l-5 4 5 4M16 8l5 4-5 4M14 5l-4 14"/>',
+  info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/>',
+  bulb: '<path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10c1 1 1 2 1 3h6c0-1 0-2 1-3a6 6 0 0 0-4-10z"/>',
+  warn: '<path d="M12 4l10 17H2z"/><path d="M12 10v5M12 18v.5"/>',
+  table: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M3 15h18M9 4v16M15 4v16"/>',
+  list: '<path d="M9 7h11M9 12h11M9 17h11"/><circle cx="4.5" cy="7" r="1"/><circle cx="4.5" cy="12" r="1"/><circle cx="4.5" cy="17" r="1"/>',
+  olist: '<path d="M10 7h10M10 12h10M10 17h10M4 5.5l1.5-1v5M4 14h3l-3 3h3"/>',
+  todo: '<rect x="3" y="4" width="6" height="6" rx="1.5"/><path d="M4.5 7l1.2 1.2L8 5.8M12 7h9M12 17h9"/><rect x="3" y="14" width="6" height="6" rx="1.5"/>',
+  text: '<path d="M5 6h14M12 6v13M9 19h6"/>',
+  heading: '<path d="M6 5v14M18 5v14M6 12h12"/>',
+  bell: '<path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 21h4"/>',
+  copy: '<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5H5v11h3"/>',
+};
+const icon = (n, s = 20) => `<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[n] || ''}</svg>`;
+
+/* =====================================================================
+   storage — the ONLY module that touches IndexedDB.
+   To move to the cloud in v2, re-implement this same interface.
+   ===================================================================== */
+const storage = (() => {
+  let db;
+  const STORES = {
+    folders: 'id', notes: 'id', tags: 'id', attachments: 'id', meta: 'key',
+    note_tags: ['note_id', 'tag_id'], note_links: ['source_note_id', 'target_note_id'],
+  };
+  const open = () => new Promise((res, rej) => {
+    const r = indexedDB.open('notes-app', 1);
+    r.onupgradeneeded = () => {
+      const d = r.result;
+      for (const [name, key] of Object.entries(STORES)) {
+        const s = d.createObjectStore(name, { keyPath: key });
+        if (name === 'attachments' || name === 'note_tags') s.createIndex('note_id', 'note_id');
+        if (name === 'note_links') { s.createIndex('source', 'source_note_id'); s.createIndex('target', 'target_note_id'); }
+      }
+    };
+    r.onsuccess = () => { db = r.result; res(); };
+    r.onerror = () => rej(r.error);
+  });
+  const req = r => new Promise((res, rej) => { r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); });
+  const txDone = t => new Promise((res, rej) => { t.oncomplete = res; t.onerror = () => rej(t.error); t.onabort = () => rej(t.error); });
+  const all = s => req(db.transaction(s).objectStore(s).getAll());
+  const get = (s, k) => req(db.transaction(s).objectStore(s).get(k));
+  const write = (stores, fn) => { const t = db.transaction(stores, 'readwrite'); fn(t); return txDone(t); };
+  const byIndex = (t, store, index, key) => req(t.objectStore(store).index(index).getAll(IDBKeyRange.only(key)));
+  const blobToB64 = b => new Promise((res, rej) => { const f = new FileReader(); f.onload = () => res(String(f.result).split(',')[1] || ''); f.onerror = () => rej(f.error); f.readAsDataURL(b); });
+
+  const api = {
+    async init() {
+      await open();
+      let inboxId = (await get('meta', 'inbox_id'))?.value;
+      const folders = await all('folders');
+      if (!inboxId || !folders.find(f => f.id === inboxId)) {
+        inboxId = folders.find(f => f.name === 'Inbox' && !f.parent_id)?.id || uuid();
+        if (!folders.find(f => f.id === inboxId)) await api.saveFolder({ id: inboxId, name: 'Inbox', parent_id: null, created_at: now(), updated_at: now(), deleted_at: null });
+        await api.setMeta('inbox_id', inboxId);
+      }
+      if (!(await api.getMeta('first_run_at'))) await api.setMeta('first_run_at', now());
+      return inboxId;
+    },
+    async getMeta(key) { return (await get('meta', key))?.value; },
+    setMeta(key, value) { return write('meta', t => t.objectStore('meta').put({ key, value })); },
+
+    async loadAll() {
+      const [notes, folders, tags, note_tags, note_links] = await Promise.all(['notes', 'folders', 'tags', 'note_tags', 'note_links'].map(all));
+      return { notes, folders, tags, note_tags, note_links };
+    },
+    saveNote(note) { return write('notes', t => t.objectStore('notes').put(note)); },
+    saveFolder(folder) { return write('folders', t => t.objectStore('folders').put(folder)); },
+    async purgeFolder(id) { return write('folders', t => t.objectStore('folders').delete(id)); },
+    async purgeNote(id) {
+      const t = db.transaction(['notes', 'attachments', 'note_tags', 'note_links'], 'readwrite');
+      const done = txDone(t);
+      t.objectStore('notes').delete(id);
+      for (const a of await byIndex(t, 'attachments', 'note_id', id)) t.objectStore('attachments').delete(a.id);
+      for (const l of await byIndex(t, 'note_tags', 'note_id', id)) t.objectStore('note_tags').delete([l.note_id, l.tag_id]);
+      for (const l of await byIndex(t, 'note_links', 'source', id)) t.objectStore('note_links').delete([l.source_note_id, l.target_note_id]);
+      for (const l of await byIndex(t, 'note_links', 'target', id)) t.objectStore('note_links').delete([l.source_note_id, l.target_note_id]);
+      await done;
+      await api.cleanTags();
+    },
+
+    // Tags (note–tag links). Takes tag names; creates tag records as needed.
+    async setNoteTags(noteId, names) {
+      const tags = await all('tags');
+      const ids = [];
+      const created = [];
+      for (const name of names) {
+        let tag = tags.find(t => t.name.toLowerCase() === name.toLowerCase());
+        if (!tag) { tag = { id: uuid(), name }; tags.push(tag); created.push(tag); }
+        ids.push(tag.id);
+      }
+      const t = db.transaction(['tags', 'note_tags'], 'readwrite');
+      const done = txDone(t);
+      created.forEach(tag => t.objectStore('tags').put(tag));
+      for (const l of await byIndex(t, 'note_tags', 'note_id', noteId)) t.objectStore('note_tags').delete([l.note_id, l.tag_id]);
+      ids.forEach(tag_id => t.objectStore('note_tags').put({ note_id: noteId, tag_id }));
+      await done;
+      await api.cleanTags();
+    },
+    async cleanTags() {
+      const [tags, links] = await Promise.all([all('tags'), all('note_tags')]);
+      const used = new Set(links.map(l => l.tag_id));
+      const orphans = tags.filter(t => !used.has(t.id));
+      if (orphans.length) await write('tags', t => orphans.forEach(o => t.objectStore('tags').delete(o.id)));
+    },
+    // Links between notes (refreshed on save; used for backlinks).
+    async setNoteLinks(sourceId, targetIds) {
+      const t = db.transaction('note_links', 'readwrite');
+      const done = txDone(t);
+      for (const l of await byIndex(t, 'note_links', 'source', sourceId)) t.objectStore('note_links').delete([l.source_note_id, l.target_note_id]);
+      targetIds.forEach(target_note_id => t.objectStore('note_links').put({ source_note_id: sourceId, target_note_id }));
+      await done;
+    },
+    // Attachments (blobs)
+    saveAttachment(att) { return write('attachments', t => t.objectStore('attachments').put(att)); },
+    getAttachment(id) { return get('attachments', id); },
+
+    // Backup — same shape as the tables, so it can be imported into a cloud DB later.
+    async exportAll() {
+      const [folders, notes, tags, note_tags, note_links, atts] = await Promise.all(['folders', 'notes', 'tags', 'note_tags', 'note_links', 'attachments'].map(all));
+      const attachments = [];
+      for (const a of atts) attachments.push({ id: a.id, note_id: a.note_id, filename: a.filename, mime_type: a.mime_type, created_at: a.created_at, data_base64: await blobToB64(a.blob) });
+      return { format: 'notes-app-backup', version: 1, exported_at: now(), inbox_id: await api.getMeta('inbox_id'), folders, notes, tags, note_tags, note_links, attachments };
+    },
+    async importAll(data) {
+      if (!data || data.format !== 'notes-app-backup') throw new Error('This file is not a notes backup.');
+      const merge = async (store, items) => {
+        const existing = new Map((await all(store)).map(x => [x.id, x]));
+        const keep = items.filter(i => !existing.has(i.id) || (existing.get(i.id).updated_at || '') < (i.updated_at || ''));
+        await write(store, t => keep.forEach(i => t.objectStore(store).put(i)));
+        return keep.length;
+      };
+      const currentInbox = await api.getMeta('inbox_id');
+      // Map the backup's Inbox onto this device's Inbox so there aren't two.
+      const remap = data.inbox_id && data.inbox_id !== currentInbox;
+      const folders = (data.folders || []).filter(f => !(remap && f.id === data.inbox_id));
+      const notes = (data.notes || []).map(n => remap && n.folder_id === data.inbox_id ? { ...n, folder_id: currentInbox } : n);
+      const fixedFolders = folders.map(f => remap && f.parent_id === data.inbox_id ? { ...f, parent_id: currentInbox } : f);
+      let count = 0;
+      count += await merge('folders', fixedFolders);
+      count += await merge('notes', notes);
+      const tags = await all('tags');
+      const tagMap = new Map(tags.map(t => [t.name.toLowerCase(), t]));
+      const idRemap = new Map();
+      const newTags = [];
+      for (const t of data.tags || []) {
+        const ex = tagMap.get(t.name.toLowerCase());
+        if (ex) idRemap.set(t.id, ex.id); else { newTags.push(t); tagMap.set(t.name.toLowerCase(), t); }
+      }
+      await write(['tags', 'note_tags', 'note_links'], t => {
+        newTags.forEach(x => t.objectStore('tags').put(x));
+        (data.note_tags || []).forEach(l => t.objectStore('note_tags').put({ note_id: l.note_id, tag_id: idRemap.get(l.tag_id) || l.tag_id }));
+        (data.note_links || []).forEach(l => t.objectStore('note_links').put(l));
+      });
+      const atts = [];
+      for (const a of data.attachments || []) {
+        const blob = await (await fetch(`data:${a.mime_type || 'application/octet-stream'};base64,${a.data_base64}`)).blob();
+        atts.push({ id: a.id, note_id: a.note_id, filename: a.filename, mime_type: a.mime_type, created_at: a.created_at, blob });
+      }
+      await write('attachments', t => atts.forEach(a => t.objectStore('attachments').put(a)));
+      return count;
+    },
+  };
+  return api;
+})();
+
+/* =====================================================================
+   App state
+   ===================================================================== */
+const S = {
+  notes: [], folders: [], tags: [], noteTags: new Map(), links: [],
+  inboxId: null, sort: lsGet('notes.sort', 'updated'),
+  sidebarOpen: lsGet('notes.sidebar', '0') === '1', expanded: new Set(JSON.parse(lsGet('notes.expanded', '[]'))),
+  route: { name: 'home', filter: { type: 'all' } },
+  editor: null, cur: null, index: [],
+};
+const liveNotes = () => S.notes.filter(n => !n.deleted_at);
+const liveFolders = () => S.folders.filter(f => !f.deleted_at);
+const folderOf = n => n.folder_id || S.inboxId;
+const tagsOf = id => S.noteTags.get(id) || [];
+
+async function refresh() {
+  const d = await storage.loadAll();
+  S.notes = d.notes; S.folders = d.folders; S.links = d.note_links;
+  S.tags = d.tags;
+  const tagName = new Map(d.tags.map(t => [t.id, t.name]));
+  S.noteTags = new Map();
+  for (const l of d.note_tags) {
+    const name = tagName.get(l.tag_id);
+    if (!name) continue;
+    if (!S.noteTags.has(l.note_id)) S.noteTags.set(l.note_id, []);
+    S.noteTags.get(l.note_id).push(name);
+  }
+  for (const arr of S.noteTags.values()) arr.sort((a, b) => a.localeCompare(b));
+  if (S.cur) S.cur = S.notes.find(n => n.id === S.cur.id) || S.cur;
+  rebuildIndex();
+}
+function tagCounts() {
+  const m = new Map();
+  for (const n of liveNotes()) for (const t of tagsOf(n.id)) m.set(t, (m.get(t) || 0) + 1);
+  return [...m.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+}
+const childFolders = parent => liveFolders().filter(f => f.id !== S.inboxId && (f.parent_id || null) === (parent || null)).sort((a, b) => a.name.localeCompare(b.name));
+function folderIds(id) { const out = new Set([id]); const walk = p => liveFolders().filter(f => f.parent_id === p).forEach(f => { if (!out.has(f.id)) { out.add(f.id); walk(f.id); } }); walk(id); return out; }
+const TONES = [['', 'Default'], ['sky', 'Sky'], ['mint', 'Mint'], ['sage', 'Sage'], ['sand', 'Sand'], ['rose', 'Rose'], ['lilac', 'Lilac'], ['slate', 'Slate']];
+// A folder's own color, or the nearest parent's.
+function toneOf(id) {
+  let f = S.folders.find(x => x.id === id), guard = 0;
+  while (f && guard++ < 20) { if (f.color) return f.color; f = f.parent_id ? S.folders.find(x => x.id === f.parent_id) : null; }
+  return '';
+}
+const applyTone = () => { const s = $('.sheet'); if (s && S.cur) s.dataset.tone = toneOf(folderOf(S.cur)); };
+function folderPath(id) {
+  const parts = []; let f = S.folders.find(x => x.id === id), guard = 0;
+  while (f && guard++ < 20) { parts.unshift(f.name); f = f.parent_id ? S.folders.find(x => x.id === f.parent_id) : null; }
+  return parts.join(' › ');
+}
+function folderOptions(excludeIds = new Set(), selected, withInbox = false) {
+  const out = [];
+  if (withInbox) out.push({ id: S.inboxId, label: 'Inbox' });
+  const walk = (p, d) => childFolders(p).forEach(f => { if (excludeIds.has(f.id)) return; out.push({ id: f.id, label: folderPath(f.id) }); walk(f.id, d + 1); });
+  walk(null, 0);
+  return out.map(o => `<option value="${o.id}" ${o.id === selected ? 'selected' : ''}>${esc(o.label)}</option>`).join('');
+}
+function sortNotes(list) {
+  const by = { updated: (a, b) => b.updated_at.localeCompare(a.updated_at), created: (a, b) => b.created_at.localeCompare(a.created_at), title: (a, b) => (a.title || 'Untitled').localeCompare(b.title || 'Untitled') };
+  return [...list].sort(by[S.sort] || by.updated);
+}
+
+/* ---- Text extraction from blocks ---- */
+function flatList(items) { const out = []; (items || []).forEach(i => { if (typeof i === 'string') out.push(i); else { out.push(i.content || i.text || ''); out.push(...flatList(i.items)); } }); return out; }
+function blocksToText(data) {
+  const out = [];
+  for (const b of data?.blocks || []) {
+    const d = b.data || {};
+    switch (b.type) {
+      case 'paragraph': case 'header': case 'callout': out.push(strip(d.text)); break;
+      case 'list': flatList(d.items).forEach(t => out.push(strip(t))); break;
+      case 'checklist': (d.items || []).forEach(i => out.push(strip(i.text))); break;
+      case 'code': out.push(d.code || ''); break;
+      case 'table': (d.content || []).forEach(r => out.push(r.map(strip).join(' '))); break;
+      case 'image': out.push(d.caption || ''); break;
+      case 'file': out.push(d.filename || ''); break;
+      case 'reminder': out.push(d.text || ''); break;
+    }
+  }
+  return out.filter(Boolean).join('\n');
+}
+function blocksToMarkdown(note) {
+  const lines = [`# ${note.title || 'Untitled'}`, ''];
+  const md = h => strip(String(h ?? '').replace(/<b>(.*?)<\/b>/g, '**$1**').replace(/<i>(.*?)<\/i>/g, '*$1*'));
+  for (const b of note.blocks?.blocks || []) {
+    const d = b.data || {};
+    if (b.type === 'header') lines.push('#'.repeat(Math.min(6, (d.level || 1) + 1)) + ' ' + md(d.text), '');
+    else if (b.type === 'paragraph') lines.push(md(d.text), '');
+    else if (b.type === 'list') { flatList(d.items).forEach((t, i) => lines.push((d.style === 'ordered' ? `${i + 1}. ` : '- ') + md(t))); lines.push(''); }
+    else if (b.type === 'checklist') { (d.items || []).forEach(i => lines.push(`- [${i.checked ? 'x' : ' '}] ${md(i.text)}`)); lines.push(''); }
+    else if (b.type === 'code') lines.push('```' + (d.lang === 'plaintext' ? '' : d.lang || ''), d.code || '', '```', '');
+    else if (b.type === 'callout') lines.push('> ' + md(d.text).replace(/\n/g, '\n> '), '');
+    else if (b.type === 'table') { (d.content || []).forEach((r, i) => { lines.push('| ' + r.map(md).join(' | ') + ' |'); if (i === 0) lines.push('|' + r.map(() => ' --- ').join('|') + '|'); }); lines.push(''); }
+    else if (b.type === 'image') lines.push(`*[Image${d.caption ? ': ' + d.caption : ''}]*`, '');
+    else if (b.type === 'reminder') lines.push(`- [${d.done ? 'x' : ' '}] Reminder: ${d.text || ''}${d.due ? ' (' + d.due.replace('T', ' ') + ')' : ''}`, '');
+    else if (b.type === 'file') lines.push(`*[File: ${d.filename || ''}]*`, '');
+  }
+  return lines.join('\n');
+}
+const extractLinks = data => [...new Set([...JSON.stringify(data || {}).matchAll(/#\/note\/([0-9a-f-]{36})/g)].map(m => m[1]))];
+
+/* ---- Attachment object URLs ---- */
+const urlCache = new Map();
+async function attUrl(id) {
+  if (urlCache.has(id)) return urlCache.get(id);
+  const a = await storage.getAttachment(id);
+  if (!a) return null;
+  const u = URL.createObjectURL(a.blob);
+  urlCache.set(id, u);
+  return u;
+}
+async function addAttachment(file) {
+  const att = { id: uuid(), note_id: S.cur?.id || null, filename: file.name || 'pasted-image.png', mime_type: file.type || 'application/octet-stream', blob: file, created_at: now() };
+  await storage.saveAttachment(att);
+  return att;
+}
+
+/* =====================================================================
+   Search (simple in-memory index)
+   ===================================================================== */
+function rebuildIndex() {
+  S.index = liveNotes().map(n => {
+    const tags = tagsOf(n.id);
+    return { n, title: n.title || 'Untitled', text: n.plain_text || '', tags, hay: ((n.title || '') + ' ' + (n.plain_text || '') + ' ' + tags.join(' ')).toLowerCase() };
+  });
+}
+function hilite(text, terms) {
+  let out = esc(text);
+  terms.filter(Boolean).forEach(t => { out = out.replace(new RegExp('(' + esc(t).replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi'), '<mark>$1</mark>'); });
+  return out;
+}
+function runSearch(q) {
+  const terms = q.toLowerCase().split(/\s+/).filter(Boolean);
+  if (!terms.length) return [];
+  return S.index.filter(e => terms.every(t => e.hay.includes(t)))
+    .map(e => {
+      const tl = e.title.toLowerCase();
+      const score = terms.reduce((s, t) => s + (tl.includes(t) ? 10 : 0) + (e.tags.some(x => x.toLowerCase().includes(t)) ? 4 : 0), 0);
+      return { e, score };
+    })
+    .sort((a, b) => b.score - a.score || b.e.n.updated_at.localeCompare(a.e.n.updated_at)).slice(0, 30)
+    .map(({ e }) => {
+      const low = e.text.toLowerCase();
+      const pos = Math.min(...terms.map(t => low.indexOf(t)).filter(i => i >= 0).concat([Infinity]));
+      let snip = '';
+      if (isFinite(pos)) { const s = Math.max(0, pos - 50); snip = (s ? '…' : '') + e.text.slice(s, s + 150).replace(/\s+/g, ' ') + (s + 150 < e.text.length ? '…' : ''); }
+      else snip = e.text.slice(0, 120).replace(/\s+/g, ' ');
+      return { e, snip, terms };
+    });
+}
+
+/* =====================================================================
+   Dialogs, toast, popup
+   ===================================================================== */
+function dialog(html, cls = '') {
+  const d = document.createElement('dialog');
+  d.className = 'modal ' + cls;
+  d.innerHTML = html;
+  document.body.append(d);
+  d.addEventListener('close', () => d.remove());
+  d.addEventListener('click', e => { if (e.target === d) d.close(); });
+  d.showModal();
+  return d;
+}
+function confirmDialog(title, text, okLabel, danger) {
+  return new Promise(res => {
+    const d = dialog(`<h2>${esc(title)}</h2><p class="muted" style="font-size:16px;color:var(--ink-2)">${esc(text)}</p>
+      <div class="modal-actions"><button class="btn ghost" data-v="0">Cancel</button><button class="btn ${danger ? 'danger' : ''}" data-v="1">${esc(okLabel)}</button></div>`);
+    let result = false;
+    d.addEventListener('click', e => { const b = e.target.closest('[data-v]'); if (b) { result = b.dataset.v === '1'; d.close(); } });
+    d.addEventListener('close', () => res(result));
+  });
+}
+function toast(msg, action) {
+  const host = $('#toast-host');
+  host.innerHTML = `<div class="toast" role="status"><span>${esc(msg)}</span>${action ? `<button>${esc(action.label)}</button>` : ''}</div>`;
+  const t = host.firstChild;
+  if (action) t.querySelector('button').onclick = () => { action.fn(); host.innerHTML = ''; };
+  clearTimeout(toast.t);
+  toast.t = setTimeout(() => { host.innerHTML = ''; }, action ? 6000 : 2800);
+}
+
+const Popup = {
+  el: $('#popup'), items: [], sel: 0, onPick: null, kind: null,
+  show(kind, items, rect, onPick) {
+    if (!items.length) return this.hide();
+    const changed = this.kind !== kind;
+    this.kind = kind; this.items = items; this.onPick = onPick;
+    if (changed || this.sel >= items.length) this.sel = 0;
+    this.el.innerHTML = items.map((it, i) => `<button type="button" data-i="${i}" class="${i === this.sel ? 'sel' : ''}"><span class="pi">${it.icon || icon('file', 16)}</span><span style="min-width:0"><span>${esc(it.label)}</span>${it.sub ? `<small>${esc(it.sub)}</small>` : ''}</span></button>`).join('');
+    this.el.hidden = false;
+    const h = this.el.offsetHeight, w = this.el.offsetWidth;
+    let top = rect.bottom + 8, left = rect.left;
+    if (top + h > innerHeight - 10) top = Math.max(10, rect.top - h - 8);
+    if (left + w > innerWidth - 10) left = innerWidth - w - 10;
+    this.el.style.top = top + 'px'; this.el.style.left = Math.max(10, left) + 'px';
+    this.el.querySelector('.sel')?.scrollIntoView({ block: 'nearest' });
+  },
+  hide() { this.el.hidden = true; this.kind = null; },
+  get open() { return !this.el.hidden; },
+  pick(i) { const it = this.items[i]; const cb = this.onPick; this.hide(); if (it && cb) cb(it); },
+  key(e) {
+    if (!this.open) return false;
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      this.sel = (this.sel + (e.key === 'ArrowDown' ? 1 : -1) + this.items.length) % this.items.length;
+      $$('button', this.el).forEach((b, i) => b.classList.toggle('sel', i === this.sel));
+      this.el.querySelector('.sel')?.scrollIntoView({ block: 'nearest' });
+    } else if (e.key === 'Enter' || e.key === 'Tab') this.pick(this.sel);
+    else if (e.key === 'Escape') this.hide();
+    else return false;
+    e.preventDefault(); e.stopImmediatePropagation();
+    return true;
+  },
+};
+Popup.el.addEventListener('mousedown', e => { e.preventDefault(); const b = e.target.closest('[data-i]'); if (b) Popup.pick(+b.dataset.i); });
+
+/* =====================================================================
+   Custom Editor.js block tools
+   ===================================================================== */
+class Callout {
+  static get toolbox() { return { title: 'Callout', icon: icon('info', 18) }; }
+  static get enableLineBreaks() { return true; }
+  static get sanitize() { return { kind: false, text: { br: true, b: true, i: true, mark: { class: true }, a: { href: true } } }; }
+  constructor({ data }) { this.data = { kind: data?.kind || 'note', text: data?.text || '' }; }
+  render() {
+    const KINDS = ['note', 'tip', 'warning'], IC = { note: 'info', tip: 'bulb', warning: 'warn' };
+    this.w = document.createElement('div');
+    this.w.innerHTML = `<button type="button" class="cb-callout-kind" title="Change callout type"></button><div class="cb-callout-text" contenteditable="true" data-placeholder="Write a callout…"></div>`;
+    const btn = this.w.firstChild, txt = this.w.lastChild;
+    txt.innerHTML = this.data.text;
+    const paint = () => { this.w.className = 'cb-callout k-' + this.data.kind; btn.innerHTML = icon(IC[this.data.kind], 18); btn.setAttribute('aria-label', 'Callout type: ' + this.data.kind); };
+    btn.onclick = () => { this.data.kind = KINDS[(KINDS.indexOf(this.data.kind) + 1) % 3]; paint(); };
+    paint();
+    this.txt = txt;
+    return this.w;
+  }
+  save() { return { kind: this.data.kind, text: this.txt.innerHTML }; }
+}
+
+class ImageBlock {
+  static get toolbox() { return { title: 'Image', icon: icon('image', 18) }; }
+  constructor({ data }) { this.data = { attachment_id: data?.attachment_id || null, caption: data?.caption || '', filename: data?.filename || '' }; }
+  render() { this.w = document.createElement('div'); this.w.className = 'cb-media'; this.paint(); return this.w; }
+  async paint() {
+    if (!this.data.attachment_id) {
+      this.w.innerHTML = `<div class="cb-drop">${icon('image', 28)}<button type="button" class="btn small">Upload image</button><small>or paste a screenshot with Ctrl+V</small><input type="file" accept="image/*" hidden></div>`;
+      const inp = this.w.querySelector('input');
+      this.w.querySelector('button').onclick = () => inp.click();
+      inp.onchange = async () => { if (inp.files[0]) { const a = await addAttachment(inp.files[0]); this.data.attachment_id = a.id; this.data.filename = a.filename; this.paint(); } };
+      return;
+    }
+    const url = await attUrl(this.data.attachment_id);
+    this.w.innerHTML = url ? `<img alt="${esc(this.data.caption || this.data.filename)}" src="${url}"><input class="cb-cap" placeholder="Add a caption" value="${esc(this.data.caption)}">` : `<div class="cb-drop">This image is missing from the database.</div>`;
+    const cap = this.w.querySelector('.cb-cap');
+    if (cap) cap.oninput = () => { this.data.caption = cap.value; };
+    if (cap) cap.addEventListener('keydown', e => e.stopPropagation());
+  }
+  save() { return this.data; }
+}
+
+class FileBlock {
+  static get toolbox() { return { title: 'File', icon: icon('file', 18) }; }
+  constructor({ data }) { this.data = { attachment_id: data?.attachment_id || null, filename: data?.filename || '', size: data?.size || 0, mime_type: data?.mime_type || '' }; }
+  render() { this.w = document.createElement('div'); this.w.className = 'cb-media'; this.paint(); return this.w; }
+  paint() {
+    if (!this.data.attachment_id) {
+      this.w.innerHTML = `<div class="cb-drop">${icon('file', 28)}<button type="button" class="btn small">Attach file</button><small>PDFs, documents, anything</small><input type="file" hidden></div>`;
+      const inp = this.w.querySelector('input');
+      this.w.querySelector('button').onclick = () => inp.click();
+      inp.onchange = async () => {
+        const f = inp.files[0]; if (!f) return;
+        const a = await addAttachment(f);
+        Object.assign(this.data, { attachment_id: a.id, filename: a.filename, size: f.size, mime_type: a.mime_type });
+        this.paint();
+      };
+      return;
+    }
+    this.w.innerHTML = `<div class="cb-file"><span class="ic">${icon('file', 20)}</span><span class="nm">${esc(this.data.filename)}<small>${fmtSize(this.data.size)}</small></span><button type="button" class="btn ghost small">${icon('download', 16)} Download</button></div>`;
+    this.w.querySelector('button').onclick = async () => {
+      const a = await storage.getAttachment(this.data.attachment_id);
+      if (!a) return toast('That file is missing from the database.');
+      const u = URL.createObjectURL(a.blob), l = document.createElement('a');
+      l.href = u; l.download = a.filename; l.click(); setTimeout(() => URL.revokeObjectURL(u), 3000);
+    };
+  }
+  save() { return this.data; }
+}
+
+/* Highlight meanings. To add one: add a row here and its colors in the CSS above. */
+const HIGHLIGHTS = [
+  { key: 'important', label: 'Important', hint: 'Things that matter most' },
+  { key: 'remember', label: 'Remember', hint: 'Things to remember' },
+  { key: 'question', label: 'Question', hint: 'Doubts and open questions' },
+];
+const highlightTools = {};
+HIGHLIGHTS.forEach((h, i) => {
+  const cls = 'hl-' + h.key;
+  highlightTools['hl_' + h.key] = class {
+    static get isInline() { return true; }
+    static get title() { return h.label; }
+    static get shortcut() { return 'CMD+SHIFT+' + (i + 1); }
+    static get sanitize() { return { mark: { class: true } }; }
+    constructor({ api }) { this.api = api; this.button = null; }
+    render() {
+      this.button = document.createElement('button');
+      this.button.type = 'button';
+      this.button.className = this.api.styles.inlineToolButton;
+      this.button.setAttribute('aria-label', 'Highlight as ' + h.label);
+      this.button.innerHTML = '<span class="hl-dot hl-dot-' + h.key + '"></span>';
+      this.api.tooltip.onHover(this.button, h.label + ' — ' + h.hint, { placement: 'top' });
+      return this.button;
+    }
+    markAt(node) { const el = node && (node.nodeType === 1 ? node : node.parentElement); return el ? el.closest('mark.hl') : null; }
+    surround(range) {
+      const existing = this.markAt(range.commonAncestorContainer);
+      if (existing) {
+        if (existing.classList.contains(cls)) { // same meaning again: remove the highlight
+          const parent = existing.parentNode;
+          while (existing.firstChild) parent.insertBefore(existing.firstChild, existing);
+          parent.removeChild(existing); parent.normalize();
+        } else existing.className = 'hl ' + cls; // other meaning: switch it
+        return;
+      }
+      if (range.collapsed) return;
+      const mark = document.createElement('mark');
+      mark.className = 'hl ' + cls;
+      mark.appendChild(range.extractContents());
+      range.insertNode(mark);
+      const sel = getSelection(); sel.removeAllRanges();
+      const r = document.createRange(); r.selectNodeContents(mark); sel.addRange(r);
+    }
+    checkState(selection) {
+      const m = this.markAt(selection.anchorNode);
+      const on = !!(m && m.classList.contains(cls));
+      this.button?.classList.toggle(this.api.styles.inlineToolButtonActive, on);
+      return on;
+    }
+  };
+});
+
+class ReminderBlock {
+  static get toolbox() { return { title: 'Reminder', icon: icon('bell', 18) }; }
+  constructor({ data }) { this.data = { text: data?.text || '', due: data?.due || '', done: !!data?.done }; }
+  render() {
+    const w = document.createElement('div');
+    w.innerHTML = `<span class="rbell">${icon('bell', 18)}</span><button type="button" class="rck" role="checkbox" aria-label="Mark reminder done"></button><input class="rtx" placeholder="Remind me to…" aria-label="Reminder text"><input class="rdue" type="datetime-local" aria-label="Remind me at">`;
+    const [, ck, tx, due] = w.children;
+    tx.value = this.data.text; due.value = this.data.due;
+    const paint = () => {
+      const late = this.data.due && new Date(this.data.due).getTime() < Date.now();
+      w.className = 'cb-reminder' + (this.data.done ? ' done' : '') + (late ? ' late' : '');
+      ck.setAttribute('aria-checked', this.data.done); ck.innerHTML = this.data.done ? icon('check', 16) : '';
+    };
+    tx.addEventListener('input', () => { this.data.text = tx.value; scheduleSave(); });
+    tx.addEventListener('keydown', e => e.stopPropagation());
+    due.addEventListener('keydown', e => e.stopPropagation());
+    due.addEventListener('change', () => { this.data.due = due.value; paint(); scheduleSave(); if (due.value) askNotifyPermission(); });
+    ck.onclick = () => { this.data.done = !this.data.done; paint(); scheduleSave(); };
+    paint();
+    return w;
+  }
+  save() { return this.data; }
+}
+
+const LANGS = [['plaintext', 'Plain text'], ['javascript', 'JavaScript'], ['typescript', 'TypeScript'], ['python', 'Python'], ['xml', 'HTML / XML'], ['css', 'CSS'], ['json', 'JSON'], ['sql', 'SQL'], ['bash', 'Shell'], ['java', 'Java'], ['c', 'C'], ['cpp', 'C++'], ['csharp', 'C#'], ['go', 'Go'], ['rust', 'Rust'], ['php', 'PHP'], ['markdown', 'Markdown']];
+class CodeBlock {
+  static get toolbox() { return { title: 'Code', icon: icon('code', 18) }; }
+  constructor({ data }) { this.data = { code: data?.code || '', lang: data?.lang || 'plaintext' }; }
+  render() {
+    const w = document.createElement('div');
+    w.className = 'cb-code';
+    w.innerHTML = `<div class="cb-code-bar"><select aria-label="Language">${LANGS.map(([v, l]) => `<option value="${v}" ${v === this.data.lang ? 'selected' : ''}>${l}</option>`).join('')}</select><button type="button" class="cb-copy">Copy</button></div>
+      <div class="cb-code-stack"><pre aria-hidden="true"><code class="hljs"></code></pre><textarea spellcheck="false" placeholder="Paste or type code"></textarea></div>`;
+    const sel = w.querySelector('select'), copy = w.querySelector('.cb-copy'), ta = w.querySelector('textarea'), code = w.querySelector('code');
+    ta.value = this.data.code;
+    const hl = () => {
+      let html;
+      try { html = this.data.lang === 'plaintext' || !window.hljs ? esc(this.data.code) : hljs.highlight(this.data.code, { language: this.data.lang, ignoreIllegals: true }).value; } catch (e) { html = esc(this.data.code); }
+      code.innerHTML = html + '\n';
+    };
+    ta.addEventListener('input', () => { this.data.code = ta.value; hl(); });
+    ta.addEventListener('keydown', e => {
+      e.stopPropagation();
+      if (e.key === 'Tab') { e.preventDefault(); ta.setRangeText('  ', ta.selectionStart, ta.selectionEnd, 'end'); ta.dispatchEvent(new Event('input')); }
+    });
+    sel.onchange = () => { this.data.lang = sel.value; hl(); };
+    copy.onclick = async () => { try { await navigator.clipboard.writeText(this.data.code); copy.textContent = 'Copied'; } catch (e) { copy.textContent = 'Press Ctrl+C'; } setTimeout(() => copy.textContent = 'Copy', 1400); };
+    hl();
+    return w;
+  }
+  save() { return this.data; }
+}
+
+/* =====================================================================
+   Editor: mount, slash menu, markdown shortcuts, [[ links, autosave
+   ===================================================================== */
+const SLASH_ITEMS = [
+  { label: 'Text', sub: 'Plain paragraph', icon: icon('text', 16), keys: 'text paragraph p', type: 'paragraph', data: { text: '' } },
+  { label: 'Heading 1', sub: 'Large section title', icon: icon('heading', 16), keys: 'heading h1 title', type: 'header', data: { text: '', level: 1 } },
+  { label: 'Heading 2', sub: 'Medium heading', icon: icon('heading', 16), keys: 'heading h2', type: 'header', data: { text: '', level: 2 } },
+  { label: 'Heading 3', sub: 'Small heading', icon: icon('heading', 16), keys: 'heading h3', type: 'header', data: { text: '', level: 3 } },
+  { label: 'Bulleted list', sub: 'Simple bullets', icon: icon('list', 16), keys: 'bullet list unordered ul', type: 'list', data: { style: 'unordered', items: [''] } },
+  { label: 'Numbered list', sub: 'Ordered steps', icon: icon('olist', 16), keys: 'number list ordered ol', type: 'list', data: { style: 'ordered', items: [''] } },
+  { label: 'To-do list', sub: 'Checkable items', icon: icon('todo', 16), keys: 'todo task checklist check', type: 'checklist', data: { items: [{ text: '', checked: false }] } },
+  { label: 'Reminder', sub: 'Get notified at a date and time', icon: icon('bell', 16), keys: 'reminder remind alarm notify due date', type: 'reminder', data: { text: '', due: '', done: false } },
+  { label: 'Code', sub: 'With syntax highlighting', icon: icon('code', 16), keys: 'code snippet', type: 'code', data: { code: '', lang: 'plaintext' } },
+  { label: 'Table', sub: 'Rows and columns', icon: icon('table', 16), keys: 'table grid', type: 'table', data: { withHeadings: true, content: [['', '', ''], ['', '', '']] } },
+  { label: 'Callout: note', sub: 'Highlighted box', icon: icon('info', 16), keys: 'callout note box', type: 'callout', data: { kind: 'note', text: '' } },
+  { label: 'Callout: tip', sub: 'Helpful hint', icon: icon('bulb', 16), keys: 'callout tip hint', type: 'callout', data: { kind: 'tip', text: '' } },
+  { label: 'Callout: warning', sub: 'Heads-up box', icon: icon('warn', 16), keys: 'callout warning caution', type: 'callout', data: { kind: 'warning', text: '' } },
+  { label: 'Image', sub: 'Upload or paste', icon: icon('image', 16), keys: 'image picture photo screenshot', type: 'image', data: {} },
+  { label: 'File', sub: 'Attach a PDF or any file', icon: icon('file', 16), keys: 'file attachment pdf attach', type: 'file', data: {} },
+];
+const MD_SHORTCUTS = {
+  '#': ['header', { text: '', level: 1 }], '##': ['header', { text: '', level: 2 }], '###': ['header', { text: '', level: 3 }],
+  '-': ['list', { style: 'unordered', items: [''] }], '*': ['list', { style: 'unordered', items: [''] }], '1.': ['list', { style: 'ordered', items: [''] }],
+  '[]': ['checklist', { items: [{ text: '', checked: false }] }], '[ ]': ['checklist', { items: [{ text: '', checked: false }] }],
+  '```': ['code', { code: '', lang: 'plaintext' }],
+};
+let linkCtx = null;
+
+function replaceCurrentBlock(type, data) {
+  const idx = S.editor.blocks.getCurrentBlockIndex();
+  S.editor.blocks.insert(type, data, {}, idx, true, true);
+}
+function onEditorInput() {
+  if (!S.editor) return;
+  const sel = getSelection();
+  if (!sel.rangeCount || !sel.anchorNode) return;
+  const node = sel.anchorNode;
+  const el = node.nodeType === 1 ? node : node.parentElement;
+  if (!el || el.closest('textarea, .title') || !el.closest('#editor')) return;
+
+  // [[ note link picker
+  if (node.nodeType === 3) {
+    const m = node.textContent.slice(0, sel.anchorOffset).match(/\[\[([^\[\]]*)$/);
+    if (m) {
+      linkCtx = { node, offset: sel.anchorOffset, len: m[0].length };
+      const q = m[1].toLowerCase();
+      const items = liveNotes().filter(n => n.id !== S.cur?.id && (n.title || 'Untitled').toLowerCase().includes(q))
+        .sort((a, b) => b.updated_at.localeCompare(a.updated_at)).slice(0, 8)
+        .map(n => ({ label: n.title || 'Untitled', sub: folderPath(folderOf(n)), icon: icon('file', 16), note: n }));
+      const rect = sel.getRangeAt(0).getBoundingClientRect();
+      Popup.show('link', items, rect.height ? rect : el.getBoundingClientRect(), it => insertNoteLink(it.note));
+      return;
+    }
+  }
+  if (Popup.kind === 'link') Popup.hide();
+
+  const para = el.closest('.ce-paragraph');
+  if (!para) { if (Popup.kind === 'slash') Popup.hide(); return; }
+  const t = para.textContent.replace(/ /g, ' ');
+
+  // Markdown shortcuts
+  const md = t.match(/^(#{1,3}|-|\*|1\.|\[\]|\[ \])\s$/) || (t === '```' ? [t, '```'] : null);
+  if (md && MD_SHORTCUTS[md[1]]) { Popup.hide(); const [type, data] = MD_SHORTCUTS[md[1]]; replaceCurrentBlock(type, JSON.parse(JSON.stringify(data))); return; }
+
+  // "/" slash menu
+  const sm = t.match(/^\/([\w ]*)$/);
+  if (sm) {
+    const q = sm[1].trim().toLowerCase();
+    const items = SLASH_ITEMS.filter(i => !q || (i.label + ' ' + i.keys).toLowerCase().includes(q));
+    Popup.show('slash', items, para.getBoundingClientRect(), it => replaceCurrentBlock(it.type, JSON.parse(JSON.stringify(it.data))));
+  } else if (Popup.kind === 'slash') Popup.hide();
+}
+function insertNoteLink(note) {
+  if (!linkCtx) return;
+  const { node, offset, len } = linkCtx;
+  try {
+    const r = document.createRange();
+    r.setStart(node, offset - len); r.setEnd(node, offset); r.deleteContents();
+    const a = document.createElement('a');
+    a.href = '#/note/' + note.id; a.textContent = note.title || 'Untitled';
+    r.insertNode(a);
+    const sp = document.createTextNode(' '); a.after(sp);
+    const s = getSelection(); s.removeAllRanges();
+    const nr = document.createRange(); nr.setStart(sp, 1); nr.collapse(true); s.addRange(nr);
+    scheduleSave();
+  } catch (e) { console.error(e); }
+  linkCtx = null;
+}
+
+async function mountEditor(note) {
+  if (!window.EditorJS) { $('#editor').innerHTML = '<p class="muted">The editor library could not be loaded. Check your internet connection and reload.</p>'; return; }
+  const tools = {
+    header: { class: window.Header, inlineToolbar: true, config: { levels: [1, 2, 3], defaultLevel: 2 } },
+    list: { class: window.List, inlineToolbar: true, toolbox: [{ title: 'Bulleted list', icon: icon('list', 18), data: { style: 'unordered' } }, { title: 'Numbered list', icon: icon('olist', 18), data: { style: 'ordered' } }] },
+    checklist: { class: window.Checklist, inlineToolbar: true },
+    table: { class: window.Table, inlineToolbar: true, config: { rows: 2, cols: 3, withHeadings: true } },
+    code: CodeBlock, callout: { class: Callout, inlineToolbar: true }, image: ImageBlock, file: FileBlock, reminder: ReminderBlock, ...Object.fromEntries(Object.entries(highlightTools).map(([k, c]) => [k, { class: c }])),
+  };
+  Object.keys(tools).forEach(k => { const c = tools[k].class ?? tools[k]; if (!c) delete tools[k]; });
+  const ed = new EditorJS({
+    holder: 'editor', tools, placeholder: "Write something, or type '/' for blocks",
+    data: note.blocks && note.blocks.blocks ? note.blocks : { blocks: [] },
+    onChange: () => scheduleSave(),
+    onReady: () => { try { new DragDrop(ed); } catch (e) { /* drag handle optional; move up/down still works */ } },
+  });
+  S.editor = ed;
+  await ed.isReady;
+}
+
+let saveTimer = null, saving = Promise.resolve(), dirty = false;
+function setStatus(text, cls = '') { const s = $('#status'); if (s) { s.textContent = text; s.className = 'status ' + cls; } }
+function scheduleSave() { dirty = true; setStatus('Saving…'); clearTimeout(saveTimer); saveTimer = setTimeout(flush, 650); }
+function flush() { clearTimeout(saveTimer); saving = saving.then(doSave).catch(e => { console.error(e); setStatus('Not saved — storage error', 'err'); }); return saving; }
+async function doSave() {
+  if (!dirty || !S.cur || !S.editor) return;
+  dirty = false;
+  const note = S.cur;
+  const out = await S.editor.save();
+  note.blocks = out;
+  note.plain_text = blocksToText(out);
+  note.updated_at = now();
+  await storage.saveNote(note);
+  const ids = new Set(S.notes.map(n => n.id));
+  const targets = extractLinks(out).filter(id => id !== note.id && ids.has(id));
+  await storage.setNoteLinks(note.id, targets);
+  S.links = S.links.filter(l => l.source_note_id !== note.id).concat(targets.map(t => ({ source_note_id: note.id, target_note_id: t })));
+  rebuildIndex();
+  if (S.cur === note) { setStatus('Saved', dirty ? '' : 'idle'); renderDates(); renderBacklinks(); }
+}
+async function touchNote(note) { note.updated_at = now(); await storage.saveNote(note); rebuildIndex(); }
+
+const isEmptyNote = n => !n.title.trim() && !(n.plain_text || '').trim() && !(n.blocks?.blocks || []).some(b => ['image', 'file', 'table'].includes(b.type));
+async function leaveNote() {
+  if (!S.cur) return;
+  await flush();
+  const n = S.cur, ed = S.editor;
+  S.cur = null; S.editor = null; Popup.hide();
+  try { await ed?.destroy?.(); } catch (e) {}
+  if (!n.deleted_at && isEmptyNote(n)) {
+    await storage.purgeNote(n.id);
+    S.notes = S.notes.filter(x => x !== n);
+    rebuildIndex();
+  }
+}
+
+/* =====================================================================
+   Routing
+   ===================================================================== */
+function parseHash() {
+  const [a, ...rest] = location.hash.replace(/^#\/?/, '').split('/');
+  const v = decodeURIComponent(rest.join('/'));
+  if (a === 'note') return { name: 'note', id: v };
+  if (a === 'folder') return { name: 'home', filter: { type: 'folder', id: v } };
+  if (a === 'tag') return { name: 'home', filter: { type: 'tag', id: v } };
+  if (a === 'trash') return { name: 'trash' };
+  return { name: 'home', filter: { type: 'all' } };
+}
+const go = h => { if (location.hash === h) route(); else location.hash = h; };
+let routing = Promise.resolve();
+function route() { routing = routing.then(doRoute).catch(e => console.error(e)); return routing; }
+async function doRoute() {
+  await leaveNote();
+  S.route = parseHash();
+  if (S.route.name !== 'note') S.lastList = location.hash || '#/';
+  renderSidebar();
+  const r = S.route;
+  $('#dock-home').classList.toggle('active', r.name === 'home' && r.filter.type === 'all');
+  if (r.name === 'note') await renderNote(r.id);
+  else if (r.name === 'trash') renderTrash();
+  else renderHome();
+  scrollTo(0, 0);
+}
+
+/* =====================================================================
+   Views
+   ===================================================================== */
+function noteCardHtml(n, o = {}) {
+  const tags = tagsOf(n.id).slice(0, 3).map(t => `<span class="c-tag">${esc(t)}</span>`).join('');
+  return `<article class="card note ${o.wide ? 'w2' : ''}" tabindex="0" role="link" draggable="true" data-act="open" data-id="${n.id}">
+    <button class="pinbtn ${n.pinned ? 'on' : ''}" data-act="pin" data-id="${n.id}" aria-label="${n.pinned ? 'Unpin' : 'Pin'} note" title="${n.pinned ? 'Unpin' : 'Pin'}">${icon('pin', 16)}</button>
+    <h3 class="c-title">${esc(n.title || 'Untitled')}</h3>
+    <p class="c-prev">${esc((n.plain_text || '').replace(/\s+/g, ' ').slice(0, 220)) || '<span style="opacity:.6">Empty note</span>'}</p>
+    <div class="c-meta"><span>${esc(S.folders.find(f => f.id === folderOf(n))?.name || 'Inbox')}</span><span>${fmtDate(n.updated_at)}</span>${tags}</div></article>`;
+}
+function pinCardHtml(n, i) {
+  return `<article class="card pin ${i === 0 ? 'w2' : ''}" tabindex="0" role="link" draggable="true" data-act="open" data-id="${n.id}">
+    <button class="pinbtn on" data-act="pin" data-id="${n.id}" aria-label="Unpin note" title="Unpin">${icon('pin', 16)}</button>
+    <div class="big dot" aria-hidden="true">${i + 1}</div>
+    <h3 class="c-title">${esc(n.title || 'Untitled')}</h3>
+    <p class="c-prev" style="-webkit-line-clamp:2">${esc((n.plain_text || '').replace(/\s+/g, ' ').slice(0, 160))}</p></article>`;
+}
+function folderCardHtml(f) {
+  const ids = folderIds(f.id);
+  const count = liveNotes().filter(n => ids.has(folderOf(n))).length;
+  const parent = f.parent_id ? folderPath(f.parent_id) : '';
+  return `<article class="card folder" tabindex="0" role="link" data-act="openFolder" data-id="${f.id}" data-drop="${f.id}">
+    <div class="big dot" aria-hidden="true">${count}</div>
+    <div class="row"><div><div class="fl-name">${esc(f.name)}</div><div class="fl-sub">${count === 1 ? '1 note' : count + ' notes'}${parent ? ' · ' + esc(parent) : ''}</div></div><span class="go">${icon('arrow', 20)}</span></div></article>`;
+}
+function todoItems() {
+  const items = [];
+  for (const n of liveNotes()) (n.blocks?.blocks || []).forEach((b, bi) => { if (b.type === 'checklist') (b.data.items || []).forEach((it, ii) => { if (strip(it.text).trim()) items.push({ n, bi, ii, text: strip(it.text), checked: !!it.checked }); }); });
+  return items.sort((a, b) => b.n.updated_at.localeCompare(a.n.updated_at));
+}
+function todoCardHtml() {
+  const items = todoItems(); if (!items.length) return '';
+  const open = items.filter(i => !i.checked), done = items.filter(i => i.checked);
+  const show = open.slice(0, 5); if (show.length < 5) show.push(...done.slice(0, 5 - show.length));
+  return `<article class="card todo h2"><div class="todo-head"><span class="t">To do</span><span class="big dot" aria-label="${open.length} open">${open.length}</span></div>
+    <div class="pills">${show.map(i => `<div class="pill ${i.checked ? 'done' : ''}">
+      <button class="ck" data-act="toggleTodo" data-id="${i.n.id}" data-b="${i.bi}" data-i="${i.ii}" role="checkbox" aria-checked="${i.checked}" aria-label="Mark as ${i.checked ? 'not done' : 'done'}">${i.checked ? icon('check', 16) : ''}</button>
+      <button class="txt" data-act="open" data-id="${i.n.id}" title="${esc(i.n.title || 'Untitled')}">${esc(i.text)}</button></div>`).join('')}</div></article>`;
+}
+function reminderItems() {
+  const items = [];
+  for (const n of liveNotes()) (n.blocks?.blocks || []).forEach((b, bi) => { if (b.type === 'reminder' && (b.data.text || '').trim()) items.push({ n, bi, text: b.data.text, due: b.data.due || '', checked: !!b.data.done }); });
+  const t = i => i.due ? new Date(i.due).getTime() : Infinity;
+  return items.sort((a, b) => t(a) - t(b));
+}
+function fmtDue(due) {
+  const d = new Date(due); if (isNaN(d)) return '';
+  const time = d.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+  const day = fmtDate(d.toISOString());
+  return (day === 'Today' || day === 'Yesterday' ? day : d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })) + ', ' + time;
+}
+function reminderCardHtml() {
+  const items = reminderItems(); if (!items.length) return '';
+  const open = items.filter(i => !i.checked), done = items.filter(i => i.checked);
+  const show = open.slice(0, 5); if (show.length < 5) show.push(...done.slice(0, 5 - show.length));
+  const late = i => !i.checked && i.due && new Date(i.due).getTime() < Date.now();
+  return `<article class="card todo h2"><div class="todo-head"><span class="t">Reminders</span><span class="big dot" aria-label="${open.length} open">${open.length}</span></div>
+    <div class="pills">${show.map(i => `<div class="pill ${i.checked ? 'done' : ''}">
+      <button class="ck" data-act="toggleReminder" data-id="${i.n.id}" data-b="${i.bi}" role="checkbox" aria-checked="${i.checked}" aria-label="Mark as ${i.checked ? 'not done' : 'done'}">${i.checked ? icon('check', 16) : ''}</button>
+      <button class="txt" data-act="open" data-id="${i.n.id}" title="${esc(i.n.title || 'Untitled')}">${esc(i.text)}${i.due ? `<small class="due ${late(i) ? 'late' : ''}">${esc(fmtDue(i.due))}</small>` : ''}</button></div>`).join('')}</div></article>`;
+}
+function imageCardHtml() {
+  for (const n of sortNotes(liveNotes()).sort((a, b) => b.updated_at.localeCompare(a.updated_at))) {
+    const b = (n.blocks?.blocks || []).find(x => x.type === 'image' && x.data.attachment_id);
+    if (b) return `<article class="card img w2 h2" tabindex="0" role="link" data-act="open" data-id="${n.id}" data-att="${b.data.attachment_id}"><div class="over"><h3 class="c-title">${esc(n.title || 'Untitled')}</h3><div class="sub">${fmtDate(n.updated_at)}</div></div></article>`;
+  }
+  return '';
+}
+async function hydrateImages() { for (const el of $$('[data-att]')) { const u = await attUrl(el.dataset.att); if (u) el.style.backgroundImage = `url("${u}")`; } }
+
+function section(title, count, inner) {
+  if (!inner) return '';
+  return `<section class="sec" aria-label="${esc(title)}"><h2 class="sec-title">${esc(title)}${count ? `<span class="sec-n">${count}</span>` : ''}</h2><div class="grid">${inner}</div></section>`;
+}
+function renderHome() {
+  const f = S.route.filter, live = liveNotes();
+  let title = 'My Notes', sub = '', list = live, folder = null;
+  if (f.type === 'folder') {
+    folder = S.folders.find(x => x.id === f.id && !x.deleted_at);
+    if (!folder) { go('#/'); return; }
+    const ids = folderIds(f.id); list = live.filter(n => ids.has(folderOf(n))); title = folder.name; sub = folderPath(f.id);
+  } else if (f.type === 'tag') { list = live.filter(n => tagsOf(n.id).some(t => t.toLowerCase() === f.id.toLowerCase())); title = '#' + f.id; }
+  else sub = live.length ? `${live.length} ${live.length === 1 ? 'note' : 'notes'}` : '';
+
+  const folderChips = childFolders(null).concat(S.folders.filter(x => x.id === S.inboxId && !x.deleted_at));
+  const chips = [`<button class="chip ${f.type === 'all' ? 'on' : ''}" data-act="goAll">All notes${f.type === 'all' ? `<span class="badge">${live.length}</span>` : ''}</button>`]
+    .concat(folderChips.map(x => { const on = f.type === 'folder' && f.id === x.id; const c = live.filter(n => folderIds(x.id).has(folderOf(n))).length; return `<button class="chip ${on ? 'on' : ''}" data-act="openFolder" data-id="${x.id}">${esc(x.name)}${on ? `<span class="badge">${c}</span>` : ''}</button>`; }))
+    .concat(tagCounts().slice(0, 8).map(([t, c]) => { const on = f.type === 'tag' && f.id.toLowerCase() === t.toLowerCase(); return `<button class="chip ${on ? 'on' : ''}" data-act="filterTag" data-id="${esc(t)}"><span class="tg">#</span>${esc(t)}${on ? `<span class="badge">${c}</span>` : ''}</button>`; }));
+
+  let body;
+  if (!live.length) {
+    body = `<div class="empty"><div class="big dot" aria-hidden="true">0</div><h2>Your notes will live here</h2><p>Start with a blank note. Press <span class="kbd">Alt</span> + <span class="kbd">N</span> any time to capture a thought into your Inbox.</p><button class="btn" data-act="new">${icon('plus', 18)} Create your first note</button></div>`;
+  } else if (f.type === 'all') {
+    const pinned = sortNotes(list.filter(n => n.pinned));
+    const rest = sortNotes(list.filter(n => !n.pinned));
+    const folderCards = childFolders(null).concat(S.folders.filter(x => x.id === S.inboxId && !x.deleted_at)).map(folderCardHtml);
+    const glance = imageCardHtml() + todoCardHtml() + reminderCardHtml();
+    body = section('Pinned', pinned.length, pinned.map(pinCardHtml).join(''))
+      + section('At a glance', 0, glance)
+      + section('Folders', folderCards.length, folderCards.join(''))
+      + section('Notes', rest.length, rest.map((n, i) => noteCardHtml(n, { wide: i % 5 === 3 })).join(''));
+  } else {
+    const subs = folder ? childFolders(folder.id) : [];
+    const pinned = sortNotes(list.filter(n => n.pinned)), sorted = sortNotes(list.filter(n => !n.pinned));
+    body = (list.length || subs.length) ? section('Subfolders', subs.length, subs.map(folderCardHtml).join(''))
+        + section('Pinned', pinned.length, pinned.map(pinCardHtml).join(''))
+        + section('Notes', sorted.length, sorted.map((n, i) => noteCardHtml(n, { wide: i % 5 === 3 })).join(''))
+      : `<div class="empty"><h2>${folder ? 'This folder is empty' : 'No notes with this tag'}</h2><p>${folder ? 'Notes you create here will show up in this folder.' : 'Add the tag to a note and it appears here.'}</p>${folder ? `<button class="btn" data-act="new">${icon('plus', 18)} New note here</button>` : ''}</div>`;
+  }
+  $('#main').innerHTML = `${hero(title, sub)}<div id="banner-slot"></div><div class="chips" role="group" aria-label="Filter notes">${chips.join('')}</div>${body}`;
+  renderBackupBanner();
+  hydrateImages();
+}
+function hero(title, sub) {
+  return `<header class="hero"><div><h1>${esc(title)}</h1>${sub ? `<p class="sub">${esc(sub)}</p>` : ''}</div>
+    <label class="sortbox">Sort by <select data-change="sort" aria-label="Sort notes">${[['updated', 'Last edited'], ['created', 'Date created'], ['title', 'Title']].map(([v, l]) => `<option value="${v}" ${S.sort === v ? 'selected' : ''}>${l}</option>`).join('')}</select></label></header>`;
+}
+async function renderBackupBanner() {
+  const slot = $('#banner-slot'); if (!slot || !liveNotes().length) return;
+  const last = (await storage.getMeta('last_export_at')) || (await storage.getMeta('first_run_at'));
+  const snooze = await storage.getMeta('backup_snooze_until');
+  const days = Math.floor((Date.now() - new Date(last).getTime()) / 864e5);
+  if (days < 7 || (snooze && snooze > now())) return;
+  const never = !(await storage.getMeta('last_export_at'));
+  if ($('#banner-slot') !== slot) return;
+  slot.innerHTML = `<div class="banner"><p>${never ? `You haven't backed up your notes yet.` : `Your last backup was ${days} days ago.`} They're stored only in this browser, so save a copy.</p><button class="btn small" data-act="export">${icon('download', 16)} Export backup</button><button class="btn ghost small" data-act="snooze">Remind me tomorrow</button></div>`;
+}
+
+function renderTrash() {
+  const notes = S.notes.filter(n => n.deleted_at).sort((a, b) => b.deleted_at.localeCompare(a.deleted_at));
+  const folders = S.folders.filter(f => f.deleted_at && f.id !== S.inboxId).sort((a, b) => b.deleted_at.localeCompare(a.deleted_at));
+  const rows = folders.map(f => `<div class="row-card"><span style="color:var(--ink-2)">${icon('folder', 22)}</span><div class="grow"><div class="t">${esc(f.name)}</div><div class="s">Folder · deleted ${fmtDate(f.deleted_at)}</div></div>
+      <button class="btn ghost small" data-act="restoreFolder" data-id="${f.id}">${icon('restore', 16)} Restore</button><button class="round" style="width:38px;height:38px" data-act="purgeFolder" data-id="${f.id}" aria-label="Delete forever" title="Delete forever">${icon('x', 16)}</button></div>`)
+    .concat(notes.map(n => `<div class="row-card"><span style="color:var(--ink-2)">${icon('file', 22)}</span><div class="grow"><div class="t">${esc(n.title || 'Untitled')}</div><div class="s">Deleted ${fmtDate(n.deleted_at)} · ${esc((n.plain_text || '').replace(/\s+/g, ' ').slice(0, 70))}</div></div>
+      <button class="btn ghost small" data-act="restoreNote" data-id="${n.id}">${icon('restore', 16)} Restore</button><button class="round" style="width:38px;height:38px" data-act="purgeNote" data-id="${n.id}" aria-label="Delete forever" title="Delete forever">${icon('x', 16)}</button></div>`));
+  $('#main').innerHTML = `<header class="hero"><div><h1>Trash</h1><p class="sub">${rows.length ? 'Restore items or delete them for good.' : ''}</p></div>${rows.length ? `<button class="btn ghost" data-act="emptyTrash">${icon('trash', 18)} Empty trash</button>` : ''}</header>
+    ${rows.length ? `<div class="list">${rows.join('')}</div>` : `<div class="empty"><div class="big dot" aria-hidden="true">0</div><h2>Trash is empty</h2><p>Deleted notes and folders wait here until you remove them for good.</p></div>`}`;
+}
+
+async function renderNote(id) {
+  const note = S.notes.find(n => n.id === id);
+  if (!note) { $('#main').innerHTML = `<div class="empty"><h2>Note not found</h2><p>It may have been deleted for good.</p><button class="btn" data-act="home">Back to notes</button></div>`; return; }
+  S.cur = note; dirty = false;
+  const trashed = !!note.deleted_at;
+  $('#main').innerHTML = `<section class="note-view">
+    <div class="note-top">
+      <button class="round" data-act="back" aria-label="Back" title="Back">${icon('back', 20)}</button>
+      <div class="meta"><label class="move">${icon('folder', 18)}<select data-change="move" aria-label="Move to folder">${folderOptions(new Set(), folderOf(note), true)}</select></label><span id="status" class="status idle">Saved</span></div>
+      <div class="actions">
+        <button class="round ${note.pinned ? 'on' : ''}" data-act="pinCur" aria-label="${note.pinned ? 'Unpin' : 'Pin'} note" title="${note.pinned ? 'Unpin' : 'Pin to top'}">${icon('pin', 20)}</button>
+        <button class="round" data-act="exportNote" aria-label="Export note as Markdown" title="Export as Markdown">${icon('download', 20)}</button>
+        <button class="round" data-act="trashCur" aria-label="Move to Trash" title="Move to Trash">${icon('trash', 20)}</button>
+      </div></div>
+    ${trashed ? `<div class="trash-note"><span>This note is in the Trash.</span><button class="btn small" data-act="restoreNote" data-id="${note.id}">${icon('restore', 16)} Restore</button></div>` : ''}
+    <article class="sheet" data-tone="${toneOf(folderOf(note))}">
+      <textarea class="title" id="title" rows="1" placeholder="Untitled" aria-label="Note title">${esc(note.title)}</textarea>
+      <p class="dates" id="dates"></p>
+      <div class="tagrow" id="tagrow"></div>
+      <div id="editor"></div>
+      <section class="backlinks" id="backlinks" aria-label="Backlinks"></section>
+    </article></section>`;
+  const t = $('#title');
+  const fit = () => { t.style.height = 'auto'; t.style.height = t.scrollHeight + 'px'; };
+  t.addEventListener('input', () => { note.title = t.value.replace(/\n/g, ' '); fit(); scheduleSave(); });
+  t.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); S.editor?.caret.setToFirstBlock('start'); } });
+  renderTags(); renderDates(); renderBacklinks();
+  await mountEditor(note);
+  fit();
+  if (!note.title && !note.plain_text) t.focus();
+}
+function renderDates() { const d = $('#dates'); if (d && S.cur) d.textContent = `Edited ${fmtDate(S.cur.updated_at)} · Created ${fmtDate(S.cur.created_at)}`; }
+function renderBacklinks() {
+  const el = $('#backlinks'); if (!el || !S.cur) return;
+  const ids = S.links.filter(l => l.target_note_id === S.cur.id).map(l => l.source_note_id);
+  const notes = ids.map(i => S.notes.find(n => n.id === i)).filter(n => n && !n.deleted_at);
+  el.innerHTML = `<h3>Backlinks</h3>` + (notes.length
+    ? notes.map(n => `<button class="bl" data-act="open" data-id="${n.id}">${icon('file', 16)}<span>${esc(n.title || 'Untitled')}</span><small>${esc(folderPath(folderOf(n)))}</small></button>`).join('')
+    : `<p>No notes link here yet. Type <span class="kbd">[[</span> in any note to link to this one.</p>`);
+}
+function renderTags() {
+  const el = $('#tagrow'); if (!el || !S.cur) return;
+  const mine = tagsOf(S.cur.id);
+  el.innerHTML = mine.map(t => `<span class="tag">#${esc(t)}<button data-act="removeTag" data-tag="${esc(t)}" aria-label="Remove tag ${esc(t)}">${icon('x', 12)}</button></span>`).join('')
+    + `<input class="taginput" id="taginput" list="taglist" placeholder="+ Add tag" aria-label="Add tag"><datalist id="taglist">${tagCounts().map(([t]) => `<option value="${esc(t)}">`).join('')}</datalist>`;
+  const inp = $('#taginput');
+  const add = refocus => { const v = inp.value.trim().replace(/^#+/, '').replace(/,/g, ''); if (v) addTag(v, refocus === true); };
+  inp.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ',') { e.preventDefault(); add(true); } else if (e.key === 'Backspace' && !inp.value && mine.length) setNoteTags(mine.slice(0, -1), true); });
+  inp.addEventListener('blur', add);
+}
+async function setNoteTags(names, refocus) {
+  const note = S.cur; if (!note) return;
+  S.noteTags.set(note.id, names); S.noteTags.set(note.id, [...names].sort((a, b) => a.localeCompare(b)));
+  await storage.setNoteTags(note.id, names);
+  await touchNote(note);
+  renderTags(); renderSidebar();
+  if (refocus) $('#taginput')?.focus();
+}
+function addTag(name, refocus) { const cur = tagsOf(S.cur.id); if (cur.some(t => t.toLowerCase() === name.toLowerCase())) { $('#taginput').value = ''; return; } setNoteTags([...cur, name], refocus); }
+
+/* ---- Reminders: fire while the app is open ---- */
+function askNotifyPermission() { try { if ('Notification' in window && Notification.permission === 'default') Notification.requestPermission(); } catch (e) {} }
+function checkReminders() {
+  let fired; try { fired = new Set(JSON.parse(lsGet('notes.fired', '[]'))); } catch (e) { fired = new Set(); }
+  let changed = false;
+  for (const n of liveNotes()) (n.blocks?.blocks || []).forEach((b, i) => {
+    if (b.type !== 'reminder' || b.data.done || !b.data.due) return;
+    const key = n.id + ':' + i + ':' + b.data.due;
+    const at = new Date(b.data.due).getTime();
+    if (fired.has(key) || isNaN(at) || at > Date.now()) return;
+    fired.add(key); changed = true;
+    const text = b.data.text || 'Reminder';
+    try { if ('Notification' in window && Notification.permission === 'granted') { const x = new Notification(text, { body: n.title || 'Untitled' }); x.onclick = () => { focus(); go('#/note/' + n.id); }; } } catch (e) {}
+    toast('Reminder: ' + text, { label: 'Open note', fn: () => go('#/note/' + n.id) });
+  });
+  if (changed) lsSet('notes.fired', JSON.stringify([...fired].slice(-300)));
+}
+setInterval(checkReminders, 20000);
+
+/* ---- Sidebar ---- */
+function renderSidebar() {
+  const sb = $('#sidebar'), open = S.sidebarOpen, live = liveNotes(), r = S.route;
+  sb.classList.toggle('open', open);
+  const cnt = id => live.filter(n => folderIds(id).has(folderOf(n))).length;
+  const inboxActive = r.name === 'home' && r.filter.type === 'folder' && r.filter.id === S.inboxId;
+  const tree = (parent, depth) => childFolders(parent).map(f => {
+    const kids = childFolders(f.id), exp = S.expanded.has(f.id), active = r.name === 'home' && r.filter.type === 'folder' && r.filter.id === f.id;
+    return `<div class="frow ${active ? 'active' : ''}" style="--d:${depth}" data-act="openFolder" data-id="${f.id}" data-drop="${f.id}">
+      ${kids.length ? `<button class="chev ${exp ? 'o' : ''}" data-act="toggleFolder" data-id="${f.id}" aria-label="${exp ? 'Collapse' : 'Expand'} ${esc(f.name)}">${icon('chevron', 14)}</button>` : '<span class="chev-sp"></span>'}
+      ${toneOf(f.id) ? `<span class="fdot" data-tone="${toneOf(f.id)}"></span>` : ''}<span class="fname">${esc(f.name)}</span><span class="fcount">${cnt(f.id)}</span>
+      <span class="fact"><button data-act="newFolder" data-id="${f.id}" title="New subfolder" aria-label="New subfolder">${icon('plus', 14)}</button><button data-act="editFolder" data-id="${f.id}" title="Rename or move" aria-label="Rename or move folder">${icon('edit', 14)}</button><button data-act="deleteFolder" data-id="${f.id}" title="Delete folder" aria-label="Delete folder">${icon('trash', 14)}</button></span></div>${exp ? tree(f.id, depth + 1) : ''}`;
+  }).join('');
+  const pinned = sortNotes(live.filter(n => n.pinned));
+  const tags = tagCounts();
+  sb.innerHTML = `
+    <button class="sb-item" data-act="toggleSidebar" aria-label="${open ? 'Collapse' : 'Expand'} sidebar" title="${open ? 'Collapse' : 'Expand'} sidebar">${icon('menu', 20)}<span class="grow">Notes</span></button>
+    <button class="sb-item ${r.name === 'home' && r.filter.type === 'all' ? 'active' : ''}" data-act="goAll" title="All notes">${icon('home', 20)}<span class="grow">All notes</span><span class="sb-count">${live.length}</span></button>
+    <button class="sb-item ${inboxActive ? 'active' : ''}" data-act="openFolder" data-id="${S.inboxId}" data-drop="${S.inboxId}" title="Inbox">${icon('inbox', 20)}<span class="grow">Inbox</span><span class="sb-count">${cnt(S.inboxId)}</span></button>
+    ${pinned.length ? `<div class="sec-head" data-act="expandSidebar">${icon('pin', 20)}<span class="grow">Pinned</span></div><div class="sec-list">${pinned.map(n => `<div class="frow ${r.name === 'note' && r.id === n.id ? 'active' : ''}" data-act="open" data-id="${n.id}"><span class="chev-sp"></span><span class="fname">${esc(n.title || 'Untitled')}</span></div>`).join('')}</div>` : ''}
+    <div class="sec-head" data-act="expandSidebar">${icon('folder', 20)}<span class="grow">Folders</span><button class="sec-add" data-act="newFolder" data-id="" aria-label="New folder" title="New folder">${icon('plus', 16)}</button></div>
+    <div class="sec-list">${tree(null, 0) || '<div class="empty-hint">No folders yet. Add one with +.</div>'}</div>
+    <div class="sec-head" data-act="expandSidebar">${icon('tag', 20)}<span class="grow">Tags</span></div>
+    <div class="sec-list">${tags.map(([t, c]) => `<div class="frow ${r.name === 'home' && r.filter.type === 'tag' && r.filter.id.toLowerCase() === t.toLowerCase() ? 'active' : ''}" data-act="filterTag" data-id="${esc(t)}"><span class="chev-sp"></span><span class="fname">#${esc(t)}</span><span class="fcount">${c}</span></div>`).join('') || '<div class="empty-hint">Tags you add to notes appear here.</div>'}</div>
+    <button class="sb-item ${r.name === 'trash' ? 'active' : ''}" data-act="trash" style="margin-top:8px" title="Trash">${icon('trash', 20)}<span class="grow">Trash</span><span class="sb-count">${S.notes.filter(n => n.deleted_at).length + S.folders.filter(f => f.deleted_at && f.id !== S.inboxId).length || ''}</span></button>`;
+}
+
+/* =====================================================================
+   Actions
+   ===================================================================== */
+async function newNote(folderId) {
+  const f = S.route.filter;
+  const folder = folderId || (S.route.name === 'home' && f.type === 'folder' ? f.id : S.inboxId);
+  const n = { id: uuid(), folder_id: folder, title: '', blocks: { blocks: [] }, plain_text: '', pinned: false, created_at: now(), updated_at: now(), deleted_at: null };
+  await leaveNote();
+  await storage.saveNote(n);
+  S.notes.push(n);
+  go('#/note/' + n.id);
+}
+async function togglePin(id) {
+  const n = S.notes.find(x => x.id === id); if (!n) return;
+  n.pinned = !n.pinned; await touchNote(n);
+  if (S.route.name === 'note') { const b = $('[data-act="pinCur"]'); if (b) { b.classList.toggle('on', n.pinned); b.title = n.pinned ? 'Unpin' : 'Pin to top'; } renderSidebar(); }
+  else { renderSidebar(); renderHome(); }
+}
+async function trashNote(id) {
+  const n = S.notes.find(x => x.id === id); if (!n) return;
+  if (S.cur === n) await flush();
+  n.deleted_at = now(); n.updated_at = now(); await storage.saveNote(n); rebuildIndex();
+  toast('Moved to Trash', { label: 'Undo', fn: () => restoreNote(n.id, true) });
+  go('#/');
+}
+async function restoreNote(id, quiet) {
+  const n = S.notes.find(x => x.id === id); if (!n) return;
+  n.deleted_at = null; n.updated_at = now();
+  const f = S.folders.find(x => x.id === n.folder_id);
+  if (!f || f.deleted_at) n.folder_id = S.inboxId;
+  await storage.saveNote(n); rebuildIndex();
+  if (!quiet) toast('Restored');
+  if (S.route.name === 'note') { await leaveNote(); await renderNote(id); } else if (S.route.name === 'trash') renderTrash(); else renderHome();
+  renderSidebar();
+}
+async function moveNote(id, folderId) {
+  const n = S.notes.find(x => x.id === id); if (!n || folderOf(n) === folderId) return;
+  n.folder_id = folderId; await touchNote(n);
+  toast('Moved to ' + (S.folders.find(f => f.id === folderId)?.name || 'Inbox'));
+  renderSidebar(); if (S.route.name === 'home') renderHome(); applyTone();
+}
+async function folderDialog(folder, parentId) {
+  const exclude = folder ? folderIds(folder.id) : new Set();
+  const d = dialog(`<h2>${folder ? 'Edit folder' : 'New folder'}</h2>
+    <label class="field">Name<input id="fname" value="${esc(folder?.name || '')}" maxlength="80" placeholder="e.g. Data Science" autocomplete="off"></label>
+    <label class="field">Inside<select id="fparent"><option value="">Top level</option>${folderOptions(exclude, folder ? folder.parent_id : parentId)}</select></label>
+    <div class="field" id="tonefield">Note color<div class="swatches" role="radiogroup" aria-label="Note color">${TONES.map(([v, l]) => `<button type="button" class="sw" data-tone="${v}" role="radio" aria-checked="${(folder?.color || '') === v}" aria-label="${l}" title="${l}"></button>`).join('')}</div></div>
+    <div class="modal-actions"><button class="btn ghost" data-v="0">Cancel</button><button class="btn" data-v="1">${folder ? 'Save folder' : 'Create folder'}</button></div>`);
+  const input = $('#fname', d); input.focus(); input.select();
+  let color = folder?.color || '';
+  $('#tonefield', d).addEventListener('click', e => {
+    const b = e.target.closest('.sw'); if (!b) return;
+    color = b.dataset.tone;
+    $$('.sw', d).forEach(x => x.setAttribute('aria-checked', x === b));
+  });
+  const submit = async () => {
+    const name = input.value.trim(); if (!name) { input.focus(); return; }
+    const parent = $('#fparent', d).value || null;
+    if (folder) { folder.name = name; folder.parent_id = parent; folder.color = color; folder.updated_at = now(); await storage.saveFolder(folder); }
+    else { const f = { id: uuid(), name, parent_id: parent, color, created_at: now(), updated_at: now(), deleted_at: null }; await storage.saveFolder(f); S.folders.push(f); if (parent) S.expanded.add(parent); lsSet('notes.expanded', JSON.stringify([...S.expanded])); }
+    d.close(); S.sidebarOpen = true; lsSet('notes.sidebar', '1'); renderSidebar(); if (S.route.name === 'home') renderHome();
+    if (S.route.name === 'note') { $('[data-change="move"]').innerHTML = folderOptions(new Set(), folderOf(S.cur), true); applyTone(); }
+  };
+  d.addEventListener('click', e => { const b = e.target.closest('[data-v]'); if (b) b.dataset.v === '1' ? submit() : d.close(); });
+  input.addEventListener('keydown', e => { if (e.key === 'Enter') submit(); });
+}
+async function deleteFolder(id) {
+  const f = S.folders.find(x => x.id === id); if (!f || id === S.inboxId) return;
+  const ids = folderIds(id);
+  const affected = liveNotes().filter(n => ids.has(folderOf(n))).length;
+  if (!await confirmDialog(`Delete "${f.name}"?`, `The folder${ids.size > 1 ? ' and its subfolders go' : ' goes'} to the Trash. ${affected ? `Its ${affected} ${affected === 1 ? 'note moves' : 'notes move'} to ${f.parent_id ? 'the parent folder' : 'your Inbox'}.` : ''}`, 'Delete folder', true)) return;
+  const target = f.parent_id || S.inboxId, ts = now();
+  for (const n of liveNotes().filter(n => ids.has(folderOf(n)))) { n.folder_id = target; n.updated_at = ts; await storage.saveNote(n); }
+  for (const x of S.folders.filter(x => ids.has(x.id))) { x.deleted_at = ts; x.updated_at = ts; await storage.saveFolder(x); }
+  if ((S.route.name === 'home' && S.route.filter.type === 'folder' && ids.has(S.route.filter.id))) go('#/'); else { renderSidebar(); if (S.route.name === 'home') renderHome(); }
+  toast('Folder moved to Trash');
+}
+async function exportBackup() {
+  const data = await storage.exportAll();
+  const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = `notes-backup-${new Date().toISOString().slice(0, 10)}.json`; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  await storage.setMeta('last_export_at', now());
+  toast('Backup saved to your downloads'); $('#banner-slot') && ($('#banner-slot').innerHTML = '');
+}
+async function importBackup(file) {
+  try {
+    const data = JSON.parse(await file.text());
+    const n = await storage.importAll(data);
+    await refresh(); await route();
+    toast(`Imported backup — ${n} ${n === 1 ? 'item' : 'items'} added or updated`);
+  } catch (e) { console.error(e); toast(e.message || 'Could not read that backup file.'); }
+}
+function openSettings() {
+  const mode = lsGet('notes.theme', 'auto');
+  const d = dialog(`<h2>Settings</h2>
+    <h3>Appearance</h3>
+    <div class="seg" role="group" aria-label="Theme">${[['auto', 'System'], ['light', 'Light'], ['dark', 'Dark']].map(([v, l]) => `<button data-act="theme" data-v="${v}" class="${mode === v ? 'on' : ''}">${l}</button>`).join('')}</div>
+    <h3>Backup</h3>
+    <p class="muted">Notes are stored only in this browser. Clearing site data would erase them, so export a backup now and then. Importing merges a backup into your notes and keeps the newer version of anything that exists in both.</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn" data-act="export">${icon('download', 18)} Export backup</button><button class="btn ghost" data-act="importPick">${icon('upload', 18)} Import backup</button><input type="file" id="importfile" accept=".json,application/json" hidden></div>
+    <p class="muted" id="lastbackup" style="margin-top:14px"></p>
+    <h3>Shortcuts</h3>
+    <p class="muted"><span class="kbd">Ctrl</span> <span class="kbd">K</span> search · <span class="kbd">Alt</span> <span class="kbd">N</span> new note (also <span class="kbd">Ctrl</span> <span class="kbd">N</span> where the browser allows) · <span class="kbd">/</span> block menu · <span class="kbd">[[</span> link a note</p>
+    <div class="modal-actions"><button class="btn" data-v="0">Done</button></div>`);
+  d.addEventListener('click', e => { if (e.target.closest('[data-v]')) d.close(); });
+  $('#importfile', d).addEventListener('change', e => { const f = e.target.files[0]; if (f) { d.close(); importBackup(f); } });
+  storage.getMeta('last_export_at').then(v => { const el = $('#lastbackup', d); if (el) el.textContent = v ? `Last backup: ${new Date(v).toLocaleString()}` : 'You haven\'t exported a backup yet.'; });
+}
+function applyTheme(mode) {
+  lsSet('notes.theme', mode);
+  const dark = mode === 'dark' || (mode === 'auto' && matchMedia('(prefers-color-scheme: dark)').matches);
+  document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+}
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { if (lsGet('notes.theme', 'auto') === 'auto') applyTheme('auto'); });
+
+/* ---- Search overlay ---- */
+function openSearch() {
+  if ($('dialog.search')) return;
+  const d = dialog(`<div class="search-in">${icon('search', 22)}<input id="q" placeholder="Search titles, content and tags" autocomplete="off" aria-label="Search notes"></div><div class="results" id="results"></div>`, 'search');
+  const q = $('#q', d), box = $('#results', d);
+  let results = [], sel = 0;
+  const paint = () => {
+    if (!q.value.trim()) { box.innerHTML = `<div class="res-empty">Type to search across all your notes.</div>`; return; }
+    if (!results.length) { box.innerHTML = `<div class="res-empty">No notes match "${esc(q.value)}". Try fewer or different words.</div>`; return; }
+    box.innerHTML = results.map((r, i) => `<button class="res ${i === sel ? 'sel' : ''}" data-i="${i}"><div class="rt">${hilite(r.e.title, r.terms)}</div>${r.snip ? `<div class="rs">${hilite(r.snip, r.terms)}</div>` : ''}<div class="rm">${esc(folderPath(folderOf(r.e.n)))}${r.e.tags.length ? ' · ' + r.e.tags.map(t => '#' + esc(t)).join(' ') : ''}</div></button>`).join('');
+    box.querySelector('.sel')?.scrollIntoView({ block: 'nearest' });
+  };
+  const choose = i => { const r = results[i]; if (r) { d.close(); go('#/note/' + r.e.n.id); } };
+  q.addEventListener('input', () => { results = runSearch(q.value); sel = 0; paint(); });
+  q.addEventListener('keydown', e => {
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); if (results.length) { sel = (sel + (e.key === 'ArrowDown' ? 1 : -1) + results.length) % results.length; paint(); } }
+    else if (e.key === 'Enter') { e.preventDefault(); choose(sel); }
+  });
+  box.addEventListener('click', e => { const b = e.target.closest('[data-i]'); if (b) choose(+b.dataset.i); });
+  paint(); q.focus();
+}
+
+/* =====================================================================
+   Global event wiring
+   ===================================================================== */
+const actions = {
+  home: () => go('#/'), goAll: () => go('#/'), back: () => go(S.lastList || '#/'),
+  search: openSearch, new: () => newNote(), settings: openSettings,
+  open: el => go('#/note/' + el.dataset.id),
+  openFolder: el => go('#/folder/' + el.dataset.id),
+  filterTag: el => go('#/tag/' + encodeURIComponent(el.dataset.id)),
+  trash: () => go('#/trash'),
+  pin: el => togglePin(el.dataset.id), pinCur: () => togglePin(S.cur.id),
+  trashCur: () => trashNote(S.cur.id),
+  restoreNote: el => restoreNote(el.dataset.id),
+  purgeNote: async el => { if (await confirmDialog('Delete forever?', 'This note and its attachments will be removed permanently. This can\'t be undone.', 'Delete forever', true)) { await storage.purgeNote(el.dataset.id); S.notes = S.notes.filter(n => n.id !== el.dataset.id); renderTrash(); renderSidebar(); } },
+  restoreFolder: async el => { const f = S.folders.find(x => x.id === el.dataset.id); const p = S.folders.find(x => x.id === f.parent_id); f.deleted_at = null; if (!p || p.deleted_at) f.parent_id = null; f.updated_at = now(); await storage.saveFolder(f); toast('Folder restored'); renderTrash(); renderSidebar(); },
+  purgeFolder: async el => { if (await confirmDialog('Delete folder forever?', 'The folder will be removed permanently.', 'Delete forever', true)) { await storage.purgeFolder(el.dataset.id); S.folders = S.folders.filter(f => f.id !== el.dataset.id); renderTrash(); renderSidebar(); } },
+  emptyTrash: async () => {
+    if (!await confirmDialog('Empty the Trash?', 'Everything in the Trash will be removed permanently. This can\'t be undone.', 'Empty trash', true)) return;
+    for (const n of S.notes.filter(n => n.deleted_at)) await storage.purgeNote(n.id);
+    for (const f of S.folders.filter(f => f.deleted_at && f.id !== S.inboxId)) await storage.purgeFolder(f.id);
+    S.notes = S.notes.filter(n => !n.deleted_at); S.folders = S.folders.filter(f => !f.deleted_at || f.id === S.inboxId);
+    renderTrash(); renderSidebar(); toast('Trash emptied');
+  },
+  toggleSidebar: () => { S.sidebarOpen = !S.sidebarOpen; lsSet('notes.sidebar', S.sidebarOpen ? '1' : '0'); renderSidebar(); },
+  expandSidebar: () => { if (!S.sidebarOpen) { S.sidebarOpen = true; lsSet('notes.sidebar', '1'); renderSidebar(); } },
+  toggleFolder: el => { const id = el.dataset.id; S.expanded.has(id) ? S.expanded.delete(id) : S.expanded.add(id); lsSet('notes.expanded', JSON.stringify([...S.expanded])); renderSidebar(); },
+  newFolder: el => folderDialog(null, el.dataset.id || null),
+  editFolder: el => folderDialog(S.folders.find(f => f.id === el.dataset.id)),
+  deleteFolder: el => deleteFolder(el.dataset.id),
+  removeTag: el => setNoteTags(tagsOf(S.cur.id).filter(t => t !== el.dataset.tag)),
+  toggleTodo: async el => {
+    const n = S.notes.find(x => x.id === el.dataset.id), it = n?.blocks?.blocks?.[+el.dataset.b]?.data?.items?.[+el.dataset.i]; if (!it) return;
+    it.checked = !it.checked; await touchNote(n); renderHome();
+  },
+  toggleReminder: async el => {
+    const n = S.notes.find(x => x.id === el.dataset.id), d = n?.blocks?.blocks?.[+el.dataset.b]?.data; if (!d) return;
+    d.done = !d.done; await touchNote(n); renderHome();
+  },
+  exportNote: () => {
+    const n = S.cur; const blob = new Blob([blocksToMarkdown(n)], { type: 'text/markdown' });
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = (n.title || 'Untitled').replace(/[\\/:*?"<>|]/g, '-') + '.md'; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 3000);
+  },
+  export: exportBackup, importPick: () => $('#importfile')?.click(),
+  snooze: async () => { await storage.setMeta('backup_snooze_until', new Date(Date.now() + 864e5).toISOString()); $('#banner-slot').innerHTML = ''; },
+  theme: el => { applyTheme(el.dataset.v); $$('[data-act="theme"]').forEach(b => b.classList.toggle('on', b === el)); },
+};
+document.addEventListener('click', e => {
+  const link = e.target.closest('#editor a[href^="#/note/"]');
+  if (link) { e.preventDefault(); go(link.getAttribute('href')); return; }
+  const el = e.target.closest('[data-act]');
+  if (!el) return;
+  e.stopPropagation();
+  actions[el.dataset.act]?.(el, e);
+}, true);
+document.addEventListener('change', e => {
+  const el = e.target.closest('[data-change]'); if (!el) return;
+  if (el.dataset.change === 'sort') { S.sort = el.value; lsSet('notes.sort', S.sort); renderHome(); }
+  if (el.dataset.change === 'move' && S.cur) { moveNote(S.cur.id, el.value); }
+});
+document.addEventListener('keydown', e => {
+  if (Popup.key(e)) return;
+  const mod = e.ctrlKey || e.metaKey;
+  if (mod && e.key.toLowerCase() === 'k') { e.preventDefault(); e.stopImmediatePropagation(); openSearch(); }
+  else if ((mod && !e.shiftKey && e.key.toLowerCase() === 'n') || (e.altKey && e.key.toLowerCase() === 'n')) { e.preventDefault(); newNote(); }
+  else if (e.key === 'Enter' && e.target.matches?.('.card[data-act]')) { e.preventDefault(); actions[e.target.dataset.act]?.(e.target); }
+}, true);
+document.addEventListener('input', e => { if (e.target.closest?.('#editor') || e.target.closest?.('.ce-paragraph')) onEditorInput(); }, true);
+document.addEventListener('mousedown', e => { if (Popup.open && !e.target.closest('#popup')) Popup.hide(); });
+document.addEventListener('visibilitychange', () => { if (document.hidden && dirty) flush(); });
+addEventListener('pagehide', () => { if (dirty) flush(); });
+addEventListener('hashchange', route);
+
+// Paste screenshots / images straight into the note.
+document.addEventListener('paste', async e => {
+  if (S.route.name !== 'note' || !S.editor || !e.target.closest?.('#editor')) return;
+  const file = [...(e.clipboardData?.files || [])].find(f => f.type.startsWith('image/'));
+  if (!file) return;
+  e.preventDefault();
+  const att = await addAttachment(file);
+  const idx = S.editor.blocks.getCurrentBlockIndex();
+  const cur = S.editor.blocks.getBlockByIndex(idx);
+  const empty = cur && cur.name === 'paragraph' && !strip(cur.holder.textContent).trim();
+  S.editor.blocks.insert('image', { attachment_id: att.id, filename: att.filename, caption: '' }, {}, empty ? idx : idx + 1, true, empty);
+}, true);
+
+// Drag a note card onto a folder in the sidebar (or a folder card) to move it.
+let dragId = null;
+document.addEventListener('dragstart', e => { const c = e.target.closest?.('.card.note, .card.pin'); if (c) { dragId = c.dataset.id; e.dataTransfer.setData('text/plain', dragId); e.dataTransfer.effectAllowed = 'move'; } });
+document.addEventListener('dragend', () => { dragId = null; $$('.drop').forEach(x => x.classList.remove('drop')); });
+document.addEventListener('dragover', e => { const t = e.target.closest?.('[data-drop]'); if (t && dragId) { e.preventDefault(); $$('.drop').forEach(x => x !== t && x.classList.remove('drop')); t.classList.add('drop'); } });
+document.addEventListener('drop', e => { const t = e.target.closest?.('[data-drop]'); if (t && dragId) { e.preventDefault(); t.classList.remove('drop'); moveNote(dragId, t.dataset.drop); dragId = null; } });
+
+/* =====================================================================
+   Boot
+   ===================================================================== */
+(async function boot() {
+  $('#dock-home').innerHTML = icon('home', 22);
+  $('[data-act="search"]').innerHTML = icon('search', 22);
+  $('[data-act="new"]').innerHTML = icon('plus', 28);
+  $('[data-act="settings"]').innerHTML = icon('settings', 22);
+  try {
+    S.inboxId = await Promise.race([storage.init(), new Promise((_, rej) => setTimeout(() => rej(new Error('Opening the database timed out.')), 6000))]);
+    await refresh();
+  } catch (e) {
+    console.error(e);
+    $('#main').innerHTML = `<div class="empty"><h2>Can't open the notes database</h2><p>Your browser blocked local storage for this page. Open the file in a normal (non-private) Chrome or Edge window and reload.</p></div>`;
+    return;
+  }
+  await route();
+  checkReminders();
+})();
+</script>
+</body>
+</html>
+
+
+
+
