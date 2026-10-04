@@ -2,7 +2,11 @@
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#8da2c4">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Notes">
 <title>My Notes</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%2313264f'/%3E%3Cpath d='M10 9h12M10 16h12M10 23h7' stroke='%23d3e5f4' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -505,10 +509,86 @@ mark { background: rgba(255,200,60,.5); color: inherit; border-radius: 4px; padd
 .toast button { font-weight: 700; padding: 6px 14px; border-radius: 99px; background: rgba(255,255,255,.18); color: inherit; }
 [data-theme="dark"] .toast button { background: rgba(13,26,63,.14); }
 
+/* ============ Phone & touch ============ */
+.dock .menu-btn, #scrim { display: none; }
+body.typing .dock { display: none; }
+@media (hover: none) {
+  .pinbtn { opacity: 1; color: var(--ink-3); width: 38px; height: 38px; }
+  .frow { min-height: 44px; }
+  .fact { display: flex; } .frow:hover .fcount, .fcount { display: none; }
+  .fact button { width: 34px; height: 34px; }
+  .card:hover { transform: none; }
+}
 @media (max-width: 760px) {
-  .sheet { padding: 32px 22px 28px 40px; border-radius: 28px; }
-  .w2 { grid-column: span 1; }
-  .sidebar { margin-left: 8px; }
+  html { -webkit-text-size-adjust: 100%; }
+  main { padding: calc(22px + env(safe-area-inset-top)) 16px calc(120px + env(safe-area-inset-bottom)); }
+  input, select, .title { font-size: 16px; }
+
+  /* Sidebar becomes a slide-in drawer */
+  .sidebar, .sidebar.open {
+    position: fixed; z-index: 40; top: 0; bottom: 0; left: 0; margin: 0; max-height: none; width: min(310px, 86vw);
+    padding: calc(12px + env(safe-area-inset-top)) 10px calc(12px + env(safe-area-inset-bottom));
+    border-radius: 0 30px 30px 0; background: var(--card-solid); transform: translateX(-105%); transition: transform .25s ease;
+    box-shadow: none;
+  }
+  body.drawer .sidebar { transform: none; box-shadow: var(--shadow-lg); }
+  #scrim { position: fixed; inset: 0; z-index: 35; background: rgba(10,18,48,.45); }
+  body.drawer #scrim { display: block; }
+  .sb-item { height: 48px; }
+
+  /* Action bar */
+  .dock { bottom: calc(14px + env(safe-area-inset-bottom)); gap: 4px; padding: 6px; max-width: calc(100vw - 24px); }
+  .dock button { width: 46px; height: 46px; }
+  .dock .primary { width: 56px; height: 56px; margin: 0 4px; }
+  .dock .menu-btn { display: grid; }
+  .toast { bottom: calc(96px + env(safe-area-inset-bottom)); max-width: calc(100vw - 24px); }
+
+  /* Home */
+  .hero { gap: 14px; }
+  .hero h1 { font-size: clamp(46px, 15vw, 72px); }
+  .hero .sub { font-size: 15px; margin-top: 8px; }
+  .sortbox { width: 100%; justify-content: space-between; }
+  .chips { flex-wrap: nowrap; overflow-x: auto; margin: 22px -16px 20px; padding: 2px 16px 6px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+  .chips::-webkit-scrollbar { display: none; }
+  .chip { flex: none; }
+  .banner { border-radius: 26px; padding: 14px 16px; }
+  .sec { margin-top: 30px; }
+  .sec-title { font-size: 24px; margin-left: 2px; }
+  .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; grid-auto-rows: auto; }
+  .card { min-height: 150px; padding: 18px; border-radius: 22px; }
+  .w2, .card.note.w2 { grid-column: 1 / -1; }
+  .h2 { grid-row: auto; }
+  .card.img { min-height: 260px; }
+  .card.todo { grid-column: 1 / -1; min-height: 0; }
+  .card.pin .big { font-size: 52px; }
+  .card.folder .big { font-size: 56px; }
+  .c-title { font-size: 18px; }
+  .empty { padding: 32px 22px; margin: 24px auto; }
+
+  /* Note */
+  .note-view { max-width: none; }
+  .note-top { gap: 10px; margin-bottom: 14px; }
+  .note-top .meta { order: 3; flex-basis: 100%; }
+  .note-top .actions { margin-left: auto; }
+  .move select { max-width: 180px; }
+  .sheet { padding: 26px 14px 24px 38px; border-radius: 26px; min-height: 55vh; overflow-wrap: anywhere; }
+  .title { font-size: clamp(32px, 10vw, 46px); }
+  #editor { font-size: 17px; }
+  .cb-reminder { border-radius: 24px; }
+  .cb-reminder .rdue { flex: 1 0 100%; }
+  .tagrow { margin: 16px 0 20px; }
+  .backlinks { margin-top: 32px; }
+
+  /* Overlays */
+  dialog.modal { padding: 22px; border-radius: 28px; max-height: calc(100dvh - 32px); overflow-y: auto; }
+  dialog.search { margin-top: calc(env(safe-area-inset-top) + 10px); }
+  .results { max-height: 60dvh; }
+  .popup { width: min(270px, calc(100vw - 20px)); }
+  .row-card { flex-wrap: wrap; border-radius: 22px; padding: 14px 16px; }
+  .row-card .grow { flex-basis: 60%; }
+}
+@media (max-width: 380px) {
+  .grid { grid-template-columns: minmax(0, 1fr); }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 </style>
@@ -518,7 +598,9 @@ mark { background: rgba(255,200,60,.5); color: inherit; border-radius: 4px; padd
   <aside class="sidebar" id="sidebar" aria-label="Navigation"></aside>
   <main id="main"></main>
 </div>
+<div id="scrim" data-act="closeDrawer"></div>
 <nav class="dock" aria-label="Main actions">
+  <button class="menu-btn" data-act="menu" aria-label="Folders and tags" title="Folders and tags"></button>
   <button data-act="home" id="dock-home" aria-label="Home" title="Home"></button>
   <button data-act="search" aria-label="Search (Ctrl+K)" title="Search (Ctrl+K)"></button>
   <button class="primary" data-act="new" aria-label="New note (Alt+N)" title="New note (Alt+N)"></button>
@@ -545,6 +627,7 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': 
 const uuid = () => (window.crypto && crypto.randomUUID) ? crypto.randomUUID()
   : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => { const r = Math.random() * 16 | 0; return (c === 'x' ? r : (r & 3 | 8)).toString(16); });
 const now = () => new Date().toISOString();
+const isMobile = () => matchMedia('(max-width: 760px)').matches;
 const lsGet = (k, d) => { try { return localStorage.getItem(k) ?? d; } catch (e) { return d; } };
 const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} };
 const strip = h => { const d = document.createElement('div'); d.innerHTML = String(h ?? ''); return d.textContent.replace(/ /g, ' '); };
@@ -1302,6 +1385,7 @@ let routing = Promise.resolve();
 function route() { routing = routing.then(doRoute).catch(e => console.error(e)); return routing; }
 async function doRoute() {
   await leaveNote();
+  document.body.classList.remove('drawer');
   S.route = parseHash();
   if (S.route.name !== 'note') S.lastList = location.hash || '#/';
   renderSidebar();
@@ -1534,7 +1618,7 @@ setInterval(checkReminders, 20000);
 
 /* ---- Sidebar ---- */
 function renderSidebar() {
-  const sb = $('#sidebar'), open = S.sidebarOpen, live = liveNotes(), r = S.route;
+  const sb = $('#sidebar'), open = S.sidebarOpen || isMobile(), live = liveNotes(), r = S.route;
   sb.classList.toggle('open', open);
   const cnt = id => live.filter(n => folderIds(id).has(folderOf(n))).length;
   const inboxActive = r.name === 'home' && r.filter.type === 'folder' && r.filter.id === S.inboxId;
@@ -1721,7 +1805,9 @@ const actions = {
     S.notes = S.notes.filter(n => !n.deleted_at); S.folders = S.folders.filter(f => !f.deleted_at || f.id === S.inboxId);
     renderTrash(); renderSidebar(); toast('Trash emptied');
   },
-  toggleSidebar: () => { S.sidebarOpen = !S.sidebarOpen; lsSet('notes.sidebar', S.sidebarOpen ? '1' : '0'); renderSidebar(); },
+  menu: () => document.body.classList.toggle('drawer'),
+  closeDrawer: () => document.body.classList.remove('drawer'),
+  toggleSidebar: () => { if (isMobile()) { document.body.classList.remove('drawer'); return; } S.sidebarOpen = !S.sidebarOpen; lsSet('notes.sidebar', S.sidebarOpen ? '1' : '0'); renderSidebar(); },
   expandSidebar: () => { if (!S.sidebarOpen) { S.sidebarOpen = true; lsSet('notes.sidebar', '1'); renderSidebar(); } },
   toggleFolder: el => { const id = el.dataset.id; S.expanded.has(id) ? S.expanded.delete(id) : S.expanded.add(id); lsSet('notes.expanded', JSON.stringify([...S.expanded])); renderSidebar(); },
   newFolder: el => folderDialog(null, el.dataset.id || null),
@@ -1770,6 +1856,12 @@ document.addEventListener('visibilitychange', () => { if (document.hidden && dir
 addEventListener('pagehide', () => { if (dirty) flush(); });
 addEventListener('hashchange', route);
 
+// Phone: hide the action bar while the keyboard is up, and re-render the sidebar when the layout switches.
+const phoneMq = matchMedia('(max-width: 760px)');
+phoneMq.addEventListener('change', () => { document.body.classList.remove('drawer', 'typing'); renderSidebar(); });
+document.addEventListener('focusin', e => { if (isMobile() && e.target.matches?.('input, textarea, [contenteditable="true"]') && !e.target.closest('dialog')) document.body.classList.add('typing'); });
+document.addEventListener('focusout', () => setTimeout(() => { if (!document.activeElement?.matches?.('input, textarea, [contenteditable="true"]')) document.body.classList.remove('typing'); }, 60));
+
 // Paste screenshots / images straight into the note.
 document.addEventListener('paste', async e => {
   if (S.route.name !== 'note' || !S.editor || !e.target.closest?.('#editor')) return;
@@ -1794,6 +1886,7 @@ document.addEventListener('drop', e => { const t = e.target.closest?.('[data-dro
    Boot
    ===================================================================== */
 (async function boot() {
+  $('[data-act="menu"]').innerHTML = icon('menu', 22);
   $('#dock-home').innerHTML = icon('home', 22);
   $('[data-act="search"]').innerHTML = icon('search', 22);
   $('[data-act="new"]').innerHTML = icon('plus', 28);
