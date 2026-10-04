@@ -521,6 +521,9 @@ body.typing .dock { display: none; }
 }
 @media (max-width: 760px) {
   html { -webkit-text-size-adjust: 100%; }
+  /* .app must not form its own stacking layer, or the dark scrim ends up above the drawer and eats every tap */
+  .app { z-index: auto; }
+  main { position: relative; z-index: 1; }
   main { padding: calc(22px + env(safe-area-inset-top)) 16px calc(120px + env(safe-area-inset-bottom)); }
   input, select, .title { font-size: 16px; }
 
